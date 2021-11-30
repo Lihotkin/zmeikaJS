@@ -62,28 +62,29 @@ body {
   margin-top: -5%;
   margin-left: 65%;
 }
-h1 {
+.zagalovok {
   text-align: center;
   color: darkgreen ;
 }
 
-li {
+.clearlist  {
   list-style-type: none;
 }
 
-ul {
+.clearlist0 {
   margin-left: 0;
   padding-left: 0;
+  margin-right: 32%;
 }
 
-button {
+.stylebutton {
   font: 21px Arial;
   width: 150px;
   height: 30px;
   display: block;
   margin: 5px;
   margin-left: auto;
-  margin-right: auto;
+  margin-right: sauto;
   background-color: darkgreen;
   color: white;
   
