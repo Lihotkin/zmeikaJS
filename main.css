@@ -1,0 +1,102 @@
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+}
+
+body {
+  /* margin: 5px; */
+  font: 21px Arial italic;
+  background-image: url("image/fon-game.jpeg");
+}
+
+.index-page {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  place-items: center;
+}
+
+#mainMenu {
+  margin: 0px auto;
+  margin-top: 15%;
+  border: 1px solid green;
+  height: 30%;
+  width: 40%;
+  background-color: greenyellow;
+}
+#gameMenu{
+  border: 1px solid green;
+  height: 30%;
+  width: 40%;
+  background-color: greenyellow;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+#game-page{
+  margin: 0px auto;
+  margin-top: 15%;
+  height: 50%;
+  width: 60%;
+  background-color: greenyellow;
+  border: 1px solid green;
+}
+#area {
+  width: 60%;
+  height: 100%;
+  background-color: white;
+  position: relative;
+}
+
+#areaGame {
+  background-color: black;
+  height: 90%;
+  width: 100%;
+}
+#esc-btn{
+  margin-left: 5%;
+}
+#score {
+  margin-top: -5%;
+  margin-left: 65%;
+}
+h1 {
+  text-align: center;
+  color: darkgreen ;
+}
+
+li {
+  list-style-type: none;
+}
+
+ul {
+  margin-left: 0;
+  padding-left: 0;
+}
+
+button {
+  font: 21px Arial;
+  width: 150px;
+  height: 30px;
+  display: block;
+  margin: 5px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: darkgreen;
+  color: white;
+  
+}
+
+#play-btn {
+  margin-top: 50px;
+}
+
+#con-btn {
+  margin-top: 50px;
+}
+
+.hidden {
+  display: none;
+}

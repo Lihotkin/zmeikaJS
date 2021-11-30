@@ -4,9 +4,34 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="main.css" rel="stylesheet" type="text/css">
+    <script src="main.js"></script>
     <title>Document</title>
 </head>
-<body>
-    
+<body class="index-page">
+    <div id = "area">
+        <div id="mainMenu">
+            <h1>Game 'Snake'</h1>
+            <ul>
+                <li><button id = "play-btn">Play</button></li>
+                <li><button id = "setting-btn">Setting</button></li>
+                <li><button id = "ext-btn">Exit</button></li>
+            </ul>   
+        </div>
+        <div id="gameMenu" class="hidden">
+            <h1>Pause</h1>
+            <ul>
+                <li><button id="con-btn">Continue</button></li>
+                <li><button id="nw-btn">New Game</button></li>
+                <li><button id="return-btn">Menu</button></li>
+            </ul>   
+        </div>
+
+        <div id="game-page" class="hidden">
+            <button id="esc-btn">Esc</button>
+            <p id = "score">SCORE: </p>
+            <div id = "areaGame"></div>
+        </div>
+    </div>
 </body>
 </html>
