@@ -2,7 +2,6 @@ let isGameActive = false;
 const gameTimeToFrame = 300;
 
 let blok = 20;
-let score = 0;
 let dir = "stop";
 let string = 20;
 let head = {
@@ -16,18 +15,16 @@ let food = {
     y: Math.floor(Math.random()*blok+0)
 };
 
-
-
 document.addEventListener('readystatechange', () => {
     if (document.readyState === 'complete') {
         main();
     }
 });
 document.addEventListener("keydown", (e) => {
-    if (e.code === 'KeyA' && dir != "right"){ dir = "left";}
-    else if (e.code === 'KeyW' && dir != "down"){ dir = "up";}
-    else if (e.code === 'KeyD' && dir != "left"){ dir = "right";}
-    else if (e.code === 'KeyS' && dir != "up"){ dir = "down";}
+    if ((e.code === 'KeyA' || e.keyCode == 37) && dir != "right"){ dir = "left";}
+    else if ((e.code === 'KeyW'|| e.keyCode == 38) && dir != "down"){ dir = "up";}
+    else if ((e.code === 'KeyD' || e.keyCode == 39) && dir != "left"){ dir = "right";}
+    else if ((e.code === 'KeyS' || e.keyCode == 40) && dir != "up"){ dir = "down";}
 
 });
 
@@ -45,6 +42,7 @@ function main() {
         pages.mainMenu.classList.add('hidden');
         pages.gameMenu.classList.add('hidden');
         pages.gamePage.classList.remove('hidden');
+        clean();
         isGameActive = true;
         gameZone();
         setTimeout(game, gameTimeToFrame);
@@ -54,30 +52,49 @@ function main() {
         pages.mainMenu.classList.add('hidden');
         pages.gameMenu.classList.remove('hidden');
         pages.gamePage.classList.remove('hidden');
-        head.x++;
+        isGameActive = false;
     });
     const rmButtonElement = document.getElementById('return-btn');
     rmButtonElement.addEventListener('click', () => {
         pages.mainMenu.classList.remove('hidden');
         pages.gameMenu.classList.add('hidden');
         pages.gamePage.classList.add('hidden');
+        isGameActive  = false;
     });
     const ngButtonElement = document.getElementById('nw-btn');
     ngButtonElement.addEventListener('click', () => {
         pages.mainMenu.classList.add('hidden');
         pages.gameMenu.classList.add('hidden');
         pages.gamePage.classList.remove('hidden');
+        clean();
+        isGameActive = true;
+        gameZone();
+        setTimeout(game, gameTimeToFrame);
     });
     const conButtonElement = document.getElementById('con-btn');
     conButtonElement.addEventListener('click', () => {
         pages.mainMenu.classList.add('hidden');
         pages.gameMenu.classList.add('hidden');
         pages.gamePage.classList.remove('hidden');
+        isGameActive  =true;
+        setTimeout(game, gameTimeToFrame);
     });
 
 }
 function gameZone(){
     var div = document.getElementById('areaGame');
+    score = 0;
+    dir = "stop";
+    head = {
+        x: Math.floor(string/2-1),
+        y: Math.floor(blok/2),
+        Tail: [],
+        MaxTail: blok * string  
+    };
+    food = {
+        x: Math.floor(Math.random()*string+0),
+        y: Math.floor(Math.random()*blok+0)
+    };
     head.Tail.unshift({x: head.x, y: head.y});
     for (var j = 0; j < blok; j++){
         for (var i = 0; i < string; i++ )
@@ -88,6 +105,7 @@ function gameZone(){
             div.appendChild(newDiv);
         }
     }
+    document.getElementById(`${head.x} ${head.y}`).classList.add('head');
     document.getElementById(`${food.x} ${food.y}`).classList.add('food');
 }
 function action(){
@@ -104,11 +122,14 @@ function eat(){
         document.getElementById(`${food.x} ${food.y}`).classList.remove('food');
         head.Tail.unshift({x: head.x, y: head.y});
         score++;
-        food = {
-            x: Math.floor(Math.random()*string+0),
-            y: Math.floor(Math.random()*blok+0)
-        };
-        
+        for (let i = 0; i < head.Tail.length; i++){
+            while (food.x === head.Tail[i].x && food.y === head.Tail[i].y){
+                food = {
+                    x: Math.floor(Math.random()*string+0),
+                    y: Math.floor(Math.random()*blok+0)
+                };
+            }
+        }
     }
     else {
         head.Tail.pop();
@@ -131,6 +152,13 @@ function tail(){
                 document.getElementById(`${head.Tail[i].x} ${head.Tail[i].y}`).classList.add('tail'); 
             } 
     }
+    for (let i = 1; i < head.Tail.length; i++){
+        if (head.Tail[0].x == head.Tail[i].x && head.Tail[0].y == head.Tail[i].y){
+            isGameActive = false;
+            score ="Dead"; 
+            document.getElementById("result").innerHTML = score;
+        }
+    }
 }
 }
 function walls(){
@@ -147,7 +175,20 @@ function game() {
     eat();
     tail();
     setTimeout(walls, gameTimeToFrame);
+    win();
     if (isGameActive) setTimeout(game, gameTimeToFrame);
 }
 
-    
+ function win(){
+     if (head.Tail.length === head.MaxTail){
+        isGameActive = false;
+        score ="You WIN"; 
+        document.getElementById("result").innerHTML = score; 
+     }
+ }   
+ function clean(){
+    let myNode = document.getElementById("areaGame");
+    while (myNode.firstChild) {
+    myNode.removeChild(myNode.firstChild);
+}
+}
