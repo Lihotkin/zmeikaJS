@@ -1,20 +1,21 @@
 const gameState = {
-  isGameActive = false,
-  gameTimeToFrame = 300,
-  blok = 20,
-  dir = "stop",
-  string = 20,
-  snake = {
-    head ={
-      x: Math.floor(string / 2 - 1),
-      y: Math.floor(blok / 2),
-    },
+  isGameActive : false,
+  gameTimeToFrame : 300,
+  blok: 20,
+  score: 0,
+  dir: "stop",
+  string: 20,
+  snake: {
     tail: [],
-    MaxTail: blok * string
-  },
-  food = {
-    x: Math.floor(Math.random() * string + 0),
-    y: Math.floor(Math.random() * blok + 0)
+    head : {
+      x: Math.floor(this.string / 2 - 1),
+      y: Math.floor(this.blok / 2)
+    },
+    maxTail: this.blok * this.string,
+    food : {
+      x: Math.floor(Math.random() * this.string + 0),
+      y: Math.floor(Math.random() * this.blok + 0)
+    }
   }
 };
 
@@ -50,16 +51,25 @@ function main() {
   }
 
   document.addEventListener("keydown", (e) => {
-    if ((e.code === 'KeyA' || e.keyCode == 37) && dir != "right") { dir = "left"; }
-    else if ((e.code === 'KeyW' || e.keyCode == 38) && dir != "down") { dir = "up"; }
-    else if ((e.code === 'KeyD' || e.keyCode == 39) && dir != "left") { dir = "right"; }
-    else if ((e.code === 'KeyS' || e.keyCode == 40) && dir != "up") { dir = "down"; }
+    if ((e.code === 'KeyA' || e.keyCode == 37) && 
+    (gameState.dir != "right" || gameState.snake.tail.length === 1)) gameState.dir = "left";
+    else if ((e.code === 'KeyW' || e.keyCode == 38) && 
+    (gameState.dir != "down" || gameState.snake.tail.length === 1 )) gameState.dir = "up";
+    else if ((e.code === 'KeyD' || e.keyCode == 39) &&
+    (gameState.dir != "left" || gameState.snake.tail.length === 1)) gameState.dir = "right";
+    else if ((e.code === 'KeyS' || e.keyCode == 40) && 
+    (gameState.dir != "up" || gameState.snake.tail.length === 1)) gameState.dir = "down";
+    else if (e.keyCode === 27) {
+      pageManager.openPages(['gameMenu', 'gamePage']);
+      gameState.isGameActive = false;
+    }
   });
 
   const playButtonElement = document.getElementById('play-btn');
   playButtonElement.addEventListener('click', () => {
     pageManager.openPage('gamePage');
-    myMenus.clean();
+    myGame.cleanGameState();
+    myMenus.cleanGameZone();
     gameState.isGameActive = true;
     myGame.gameZone();
     setTimeout(myGame.game, gameState.gameTimeToFrame);
@@ -77,7 +87,8 @@ function main() {
   const ngButtonElement = document.getElementById('nw-btn');
   ngButtonElement.addEventListener('click', () => {
     pageManager.openPage('gamePage');
-    myMenus.clean();
+    myGame.cleanGameState();
+    myMenus.cleanGameZone();
     gameState.isGameActive = true;
     myGame.gameZone();
     setTimeout(myGame.game, gameState.gameTimeToFrame);
@@ -90,111 +101,123 @@ function main() {
   });
 }
 let myGame = {
-  game() {
-    this.walls();
-    this.action();
-    this.eat();
-    this.drawTail();
-    this.checkWinCondition();
-    if (isGameActive) setTimeout(this.game.bind(this), gameTimeToFrame);
+  game () {
+    myGame.drawWallsCondition();
+    myGame.action();
+    myGame.eat();
+    myGame.drawTailCondition();
+    myGame.checkWinCondition();
+    // if (gameState.isGameActive) setTimeout(this.game.bind(this), gameState.gameTimeToFrame);
+    if (gameState.isGameActive) setTimeout(myGame.game, gameState.gameTimeToFrame);
+  },
+  drawWallsCondition () {
+    if ((gameState.snake.head.x === 0 && gameState.dir === "left") ||
+      (gameState.snake.head.x === gameState.string - 1 && gameState.dir === "right") ||
+      (gameState.snake.head.y === gameState.blok - 1 && gameState.dir === "down") || 
+      (gameState.snake.head.y === 0 && gameState.dir === "up")) {
+      gameState.isGameActive = false;
+      gameState.score = "Dead";
+      document.getElementById("result").innerHTML = gameState.score;
+    }
   },
   gameZone() {
     var div = document.getElementById('areaGame');
-    score = 0;
-    dir = "stop";
-    head = {
-      x: Math.floor(string / 2 - 1),
-      y: Math.floor(blok / 2),
-      Tail: [],
-      MaxTail: blok * string
+    gameState.score = 0;
+    gameState.dir = "stop";
+    gameState.snake.head = {
+      x: Math.floor(gameState.string / 2 - 1),
+      y: Math.floor(gameState.blok / 2),
+      tail: [],
+      maxTail: gameState.blok * gameState.string
     };
-    food = {
-      x: Math.floor(Math.random() * string + 0),
-      y: Math.floor(Math.random() * blok + 0)
+    gameState.snake.food = {
+      x: Math.floor(Math.random() * gameState.string + 0),
+      y: Math.floor(Math.random() * gameState.blok + 0)
     };
-    head.Tail.unshift({ x: head.x, y: head.y });
-    for (var j = 0; j < blok; j++) {
-      for (var i = 0; i < string; i++) {
+    gameState.snake.tail.unshift({ x: gameState.snake.head.x, y: gameState.snake.head.y });
+    for (var j = 0; j < gameState.blok; j++) {
+      for (var i = 0; i < gameState.string; i++) {
         var newDiv = document.createElement('div');
         newDiv.id = `${i} ${j}`;
         newDiv.classList.add('AreaBox')
         div.appendChild(newDiv);
       }
     }
-    document.getElementById(`${head.x} ${head.y}`).classList.add('head');
-    document.getElementById(`${food.x} ${food.y}`).classList.add('food');
+    document.getElementById(`${gameState.snake.head.x} ${gameState.snake.head.y}`).classList.add('head');
+    document.getElementById(`${gameState.snake.food.x} ${gameState.snake.food.y}`).classList.add('food');
   },
   action() {
-    document.getElementById(`${food.x} ${food.y}`).classList.remove('food');
-    if (dir === "left") { head.x--; }
-    else if (dir === "right") { head.x++; }
-    else if (dir === "up") { head.y--; }
-    else if (dir === "down") { head.y++; }
-    document.getElementById(`${food.x} ${food.y}`).classList.add('food');
-    document.getElementById("result").innerHTML = score;
+    document.getElementById(`${gameState.snake.food.x} ${gameState.snake.food.y}`).classList.remove('food');
+    if (gameState.dir === "left") gameState.snake.head.x--;
+    else if (gameState.dir === "right") gameState.snake.head.x++;
+    else if (gameState.dir === "up") gameState.snake.head.y--;
+    else if (gameState.dir === "down") gameState.snake.head.y++;
+    document.getElementById(`${gameState.snake.food.x} ${gameState.snake.food.y}`).classList.add('food');
+    document.getElementById("result").innerHTML = gameState.score;
   },
   eat() {
-    if (head.x == food.x && head.y == food.y) {
-      document.getElementById(`${food.x} ${food.y}`).classList.remove('food');
-      head.Tail.unshift({ x: head.x, y: head.y });
-      score++;
-      for (let i = 0; i < head.Tail.length; i++) {
-        while (food.x === head.Tail[i].x && food.y === head.Tail[i].y) {
-          food = {
-            x: Math.floor(Math.random() * string + 0),
-            y: Math.floor(Math.random() * blok + 0)
+    if (gameState.snake.head.x == gameState.snake.food.x && 
+      gameState.snake.head.y == gameState.snake.food.y) {
+      document.getElementById(`${gameState.snake.food.x} ${gameState.snake.food.y}`).classList.remove('food');
+      gameState.snake.tail.unshift({ x: gameState.snake.head.x, y: gameState.snake.head.y });
+      gameState.score++;
+      for (let i = 0; i < gameState.snake.tail.length; i++) {
+        while (gameState.snake.food.x === gameState.snake.tail[i].x && 
+          gameState.snake.food.y === gameState.snake.tail[i].y) {
+            gameState.snake.food = {
+            x: Math.floor(Math.random() * gameState.string + 0),
+            y: Math.floor(Math.random() * gameState.blok + 0)
           };
         }
       }
     }
     else {
-      head.Tail.pop();
-      head.Tail.unshift({ x: head.x, y: head.y });
+      gameState.snake.tail.pop();
+      gameState.snake.tail.unshift({ x: gameState.snake.head.x, y: gameState.snake.head.y });
     }
   },
-  tail() {
-    if (head.Tail[0].x >= 0 && head.Tail[0].x < string && head.Tail[0].y >= 0 && head.Tail[0].y < blok) {
-      for (let j = 0; j < blok; j++) {
-        for (let i = 0; i < string; i++) {
+  drawTailCondition() {
+    if (gameState.snake.tail[0].x >= 0 && gameState.snake.tail[0].x < gameState.string &&
+      gameState.snake.tail[0].y >= 0 && gameState.snake.tail[0].y < gameState.blok) {
+      for (let j = 0; j < gameState.blok; j++) {
+        for (let i = 0; i < gameState.string; i++) {
           document.getElementById(`${i} ${j}`).classList.remove('tail');
           document.getElementById(`${i} ${j}`).classList.remove('head');
         }
       }
-      for (let i = 0; i < head.Tail.length; i++) {
+      for (let i = 0; i < gameState.snake.tail.length; i++) {
         if (i == 0) {
-          document.getElementById(`${head.Tail[i].x} ${head.Tail[i].y}`).classList.add('head');
+          document.getElementById(`${gameState.snake.tail[i].x} ${gameState.snake.tail[i].y}`).classList.add('head');
         }
         else {
-          document.getElementById(`${head.Tail[i].x} ${head.Tail[i].y}`).classList.add('tail');
+          document.getElementById(`${gameState.snake.tail[i].x} ${gameState.snake.tail[i].y}`).classList.add('tail');
         }
       }
-      for (let i = 1; i < head.Tail.length; i++) {
-        if (head.Tail[0].x == head.Tail[i].x && head.Tail[0].y == head.Tail[i].y) {
-          isGameActive = false;
-          score = "Dead";
-          document.getElementById("result").innerHTML = score;
+      for (let i = 1; i < gameState.snake.tail.length; i++) {
+        if (gameState.snake.tail[0].x == gameState.snake.tail[i].x &&
+          gameState.snake.tail[0].y == gameState.snake.tail[i].y) {
+          gameState.isGameActive = false;
+          gameState.score = "Dead";
+          document.getElementById("result").innerHTML = gameState.score;
         }
       }
-    }
-  },
-  walls() {
-    if ((head.x === 0 && dir === "left") || (head.x === string - 1 && dir === "right") ||
-      (head.y === blok - 1 && dir === "down") || (head.y === 0 && dir === "up")) {
-      isGameActive = false;
-      score = "Dead";
-      document.getElementById("result").innerHTML = score;
     }
   },
   checkWinCondition() {
-    if (head.Tail.length === head.MaxTail) {
-      isGameActive = false;
-      score = "You WIN";
-      document.getElementById("result").innerHTML = score;
+    if (gameState.snake.tail.length ===gameState.snake.maxTail) {
+      gameState.isGameActive = false;
+      gameState.score = "You WIN";
+      document.getElementById("result").innerHTML = gameState.score;
     }
+  },
+  cleanGameState (){
+    gameState.dir = "stop";
+    gameState.score = 0;
+    gameState.snake.tail = [];
   }
 }
 const myMenus = {
-  clean() {
+  cleanGameZone() {
     const myNode = document.getElementById("areaGame");
     myNode.innerHTML = '';
   }

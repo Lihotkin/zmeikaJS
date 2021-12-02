@@ -32,7 +32,7 @@ body {
   background-color: greenyellow;
   position: absolute;
   left: 50%;
-  top: 50%;
+  top: 30%;
   transform: translate(-50%, -50%);
 }
 #game-page{
@@ -74,6 +74,29 @@ body {
   display: inline;
   width: 6%;
 }
+#esc-btn{
+  width: 55px;
+  margin-left: -5%;
+}
+#play-btn {
+  margin-top: 50px;
+}
+
+#con-btn {
+  margin-top: 50px;
+}
+/* #settingSpeed{
+  position: absolute;
+  width: 200px;
+  height: 30px;
+  background-color: aquamarine;
+}
+#settingBar {
+  position: relative;
+  width: 30%;
+  height: 100%;
+  background-color: coral;
+} */
 .zagalovok {
   text-align: center;
   color: darkgreen ;
@@ -101,18 +124,6 @@ body {
   color: white;
   
 }
-#esc-btn{
-  width: 55px;
-  margin-left: -5%;
-}
-#play-btn {
-  margin-top: 50px;
-}
-
-#con-btn {
-  margin-top: 50px;
-}
-
 .hidden {
   display: none;
 }
