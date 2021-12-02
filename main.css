@@ -37,11 +37,10 @@ body {
 }
 #game-page{
   margin: 0px auto;
-  margin-top: 15%;
-  height: 56%;
-  width: 60%;
-  background-color: greenyellow;
-  border: 1px solid green;
+  margin-top: 5%;
+  height: 60%;
+  width: 45%;
+  background-color: white;
 }
 #area {
   margin-right: 20%;
@@ -56,20 +55,24 @@ body {
   height: 90%;
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  grid-template-rows: repeat(10, 1fr);
+  grid-template-columns: repeat(20, 1fr);
+  grid-template-rows: repeat(20, 1fr);
   place-items: stretch;
 }
 .AreaBox{
   background-color: black;
-  border: 1px solid white;
 }
-#esc-btn{
-  margin-left: 5%;
-}
+/* .WallsBox{
+  background-color: white;
+} */
 #score {
+  display: inline;
   margin-top: -5%;
   margin-left: 65%;
+}
+#result{
+  display: inline;
+  width: 5%;
 }
 .zagalovok {
   text-align: center;
@@ -98,7 +101,10 @@ body {
   color: white;
   
 }
-
+#esc-btn{
+  width: 55px;
+  margin-left: 5%;
+}
 #play-btn {
   margin-top: 50px;
 }

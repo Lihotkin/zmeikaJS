@@ -1,12 +1,15 @@
 let isGameActive = false;
-const gameTimeToFrame = 1000;
+const gameTimeToFrame = 300;
 
-let blok = 10;
+let blok = 20;
+let score = 0;
 let dir = "stop";
-let string = 10;
+let string = 20;
 let head = {
     x: Math.floor(string/2-1),
-    y: Math.floor(blok/2)
+    y: Math.floor(blok/2),
+    Tail: [],
+    MaxTail: blok * string  
 };
 let food = {
     x: Math.floor(Math.random()*string+0),
@@ -21,10 +24,10 @@ document.addEventListener('readystatechange', () => {
     }
 });
 document.addEventListener("keydown", (e) => {
-    if (e.keycode === 37 && dir != "right"){ dir = "left";}
-    else if (e.keycode === 38 && dir != "down"){ dir = "up";}
-    else if (e.keycode === 39 && dir != "left"){ dir = "right";}
-    else if (e.keycode === 40 && dir != "up"){ dir = "down";}
+    if (e.code === 'KeyA' && dir != "right"){ dir = "left";}
+    else if (e.code === 'KeyW' && dir != "down"){ dir = "up";}
+    else if (e.code === 'KeyD' && dir != "left"){ dir = "right";}
+    else if (e.code === 'KeyS' && dir != "up"){ dir = "down";}
 
 });
 
@@ -43,7 +46,7 @@ function main() {
         pages.gameMenu.classList.add('hidden');
         pages.gamePage.classList.remove('hidden');
         isGameActive = true;
-        GameZone();
+        gameZone();
         setTimeout(game, gameTimeToFrame);
     });
     const escButtonElement = document.getElementById('esc-btn');
@@ -73,8 +76,9 @@ function main() {
     });
 
 }
-function GameZone(){
+function gameZone(){
     var div = document.getElementById('areaGame');
+    head.Tail.unshift({x: head.x, y: head.y});
     for (var j = 0; j < blok; j++){
         for (var i = 0; i < string; i++ )
         {
@@ -85,18 +89,64 @@ function GameZone(){
         }
     }
     document.getElementById(`${food.x} ${food.y}`).classList.add('food');
-    document.getElementById(`${head.x} ${head.y}`).classList.add('head');
 }
-function game() {
+function action(){
     document.getElementById(`${food.x} ${food.y}`).classList.remove('food');
-    document.getElementById(`${head.x} ${head.y}`).classList.remove('head');
-    if (dir === "left") {head.x--;}
+    if (dir === "left") { head.x--;}
     else if (dir === "right") {head.x++;}
     else if (dir === "up") {head.y--;}
     else if (dir === "down") {head.y++;}
     document.getElementById(`${food.x} ${food.y}`).classList.add('food');
-    document.getElementById(`${head.x} ${head.y}`).classList.add('head');
-    // document.getElementById("result").innerHTML = head.x;
+    document.getElementById("result").innerHTML = score;
+}
+function eat(){
+    if (head.x == food.x && head.y == food.y){
+        document.getElementById(`${food.x} ${food.y}`).classList.remove('food');
+        head.Tail.unshift({x: head.x, y: head.y});
+        score++;
+        food = {
+            x: Math.floor(Math.random()*string+0),
+            y: Math.floor(Math.random()*blok+0)
+        };
+        
+    }
+    else {
+        head.Tail.pop();
+        head.Tail.unshift({x: head.x, y: head.y});
+    }
+}
+function tail(){
+    if (head.Tail[0].x >= 0 && head.Tail[0].x < string && head.Tail[0].y >= 0 && head.Tail[0].y < blok){
+    for (let j = 0; j < blok; j++){
+        for (let i = 0; i < string; i++){
+            document.getElementById(`${i} ${j}`).classList.remove('tail');
+            document.getElementById(`${i} ${j}`).classList.remove('head');
+        }
+    }
+    for (let i = 0; i < head.Tail.length; i++){
+            if (i == 0){
+                document.getElementById(`${head.Tail[i].x} ${head.Tail[i].y}`).classList.add('head'); 
+            }
+            else {
+                document.getElementById(`${head.Tail[i].x} ${head.Tail[i].y}`).classList.add('tail'); 
+            } 
+    }
+}
+}
+function walls(){
+    if ((head.x === 0 && dir === "left") || ( head.x === string-1 && dir === "right" ) || 
+    ( head.y === blok-1 && dir === "down" ) || ( head.y === 0 && dir === "up" )){ 
+        isGameActive = false;
+        score ="Dead"; 
+        document.getElementById("result").innerHTML = score;
+    }
+}
+
+function game() {
+    action();
+    eat();
+    tail();
+    setTimeout(walls, gameTimeToFrame);
     if (isGameActive) setTimeout(game, gameTimeToFrame);
 }
 
