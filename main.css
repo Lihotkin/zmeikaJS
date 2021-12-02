@@ -67,12 +67,12 @@ body {
 } */
 #score {
   display: inline;
-  margin-top: -5%;
-  margin-left: 65%;
+  margin-bottom: 2%;
+  margin-left: 40%;
 }
 #result{
   display: inline;
-  width: 5%;
+  width: 6%;
 }
 .zagalovok {
   text-align: center;
@@ -103,7 +103,7 @@ body {
 }
 #esc-btn{
   width: 55px;
-  margin-left: 5%;
+  margin-left: -5%;
 }
 #play-btn {
   margin-top: 50px;
