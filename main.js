@@ -34,7 +34,8 @@ function main() {
     pages: {
       mainMenu: document.getElementById('mainMenu'),
       gameMenu: document.getElementById('gameMenu'),
-      gamePage: document.getElementById('game-page')
+      gamePage: document.getElementById('game-page'),
+      settingPage: document.getElementById('settingPage')
     },
     openPage(name) {
       for (const [pageName, pageElement] of Object.entries(this.pages)) {
@@ -74,6 +75,10 @@ function main() {
     myGame.gameZone();
     setTimeout(myGame.game, gameState.gameTimeToFrame);
   });
+  const exitButtonElement = document.getElementById('ext-btn');
+  exitButtonElement.addEventListener('click', () => {
+    close();
+  });
   const escButtonElement = document.getElementById('esc-btn');
   escButtonElement.addEventListener('click', () => {
     pageManager.openPages(['gameMenu', 'gamePage']);
@@ -82,7 +87,7 @@ function main() {
   const rmButtonElement = document.getElementById('return-btn');
   rmButtonElement.addEventListener('click', () => {
     pageManager.openPage('mainMenu');
-    gameState.isGameActive = true;
+    gameState.isGameActive = false;
   });
   const ngButtonElement = document.getElementById('nw-btn');
   ngButtonElement.addEventListener('click', () => {
@@ -98,6 +103,27 @@ function main() {
     pageManager.openPage('gamePage');
     gameState.isGameActive = true;
     setTimeout(myGame.game, gameState.gameTimeToFrame);
+  });
+  const setButtonElement = document.getElementById('setting-btn');
+  setButtonElement.addEventListener('click', () => {
+    pageManager.openPage('settingPage');
+  });
+  const hardButtonElement = document.getElementById('settingHard-btn');
+  hardButtonElement.addEventListener('click', () => {
+    gameState.gameTimeToFrame = 70;
+  });
+  const mediumButtonElement = document.getElementById('settingMedium-btn');
+  mediumButtonElement.addEventListener('click', () => {
+    gameState.gameTimeToFrame = 100;
+  });
+  const lightButtonElement = document.getElementById('settingLight-btn');
+  lightButtonElement.addEventListener('click', () => {
+    gameState.gameTimeToFrame = 300;
+  });
+  const returnSetButtonElement = document.getElementById('returnSet-btn');
+  returnSetButtonElement.addEventListener('click', () => {
+    pageManager.openPage('mainMenu');
+    gameState.isGameActive = false;
   });
 }
 let myGame = {
