@@ -1,10 +1,12 @@
 const gameState = {
   isGameActive : false,
+  isDeadWalls: true,
   gameTimeToFrame : 300,
+  string: 20,
   blok: 20,
   score: 0,
+  bestScore: 0,
   dir: "stop",
-  string: 20,
   snake: {
     tail: [],
     head : {
@@ -50,7 +52,26 @@ function main() {
       }
     }
   }
-
+  const areaManager = {
+    area: document.getElementById('areaGame'),
+    newSize(size) {
+      if (size === 'areaLight'){
+        this.area.classList.remove('areaMax');
+        this.area.classList.remove('areaMedium');
+        this.area.classList.add('areaLight');
+      } 
+      else if( size === 'areaMedium'){
+        this.area.classList.remove('areaMax');
+        this.area.classList.remove('areaLight');
+        this.area.classList.add('areaMedium');
+      }
+      else if (size === 'areaMax'){
+        this.area.classList.remove('areaMedium');
+        this.area.classList.remove('areaLight');
+        this.area.classList.add('areaMax');
+      }
+    }
+  } 
   document.addEventListener("keydown", (e) => {
     if ((e.code === 'KeyA' || e.keyCode == 37) && 
     (gameState.dir != "right" || gameState.snake.tail.length === 1)) gameState.dir = "left";
@@ -125,6 +146,36 @@ function main() {
     pageManager.openPage('mainMenu');
     gameState.isGameActive = false;
   });
+  const setSizeLButtonElement = document.getElementById('setSizeL-btn');
+  setSizeLButtonElement.addEventListener('click', () =>{
+    areaManager.newSize('areaLight');
+    gameState.blok = 20;
+    gameState.string = 20;
+  });
+  const setSizeMButtonElement = document.getElementById('setSizeM-btn');
+  setSizeMButtonElement.addEventListener('click', () =>{
+    areaManager.newSize('areaMedium');
+    gameState.blok = 30;
+    gameState.string = 30;
+  });
+  const setSizeMaxButtonElement = document.getElementById('setSizeMax-btn');
+  setSizeMaxButtonElement.addEventListener('click', () =>{
+    areaManager.newSize('areaMax');
+    gameState.blok = 40;
+    gameState.string = 40;
+  });
+  const redactWallsDWButtonElement = document.getElementById('redactorWallsDW');
+  redactWallsDWButtonElement.addEventListener('click', () => {
+    document.getElementById('redactorWallsDW').classList.add('hidden');
+    document.getElementById('redactorWallsTW').classList.remove('hidden');
+    gameState.isDeadWalls = false;
+  });
+  const redactWallsTWButtonElement = document.getElementById('redactorWallsTW');
+  redactWallsTWButtonElement.addEventListener('click', () => {
+    document.getElementById('redactorWallsDW').classList.remove('hidden');
+    document.getElementById('redactorWallsTW').classList.add('hidden');
+    gameState.isDeadWalls = true;
+  });
 }
 let myGame = {
   game () {
@@ -137,13 +188,30 @@ let myGame = {
     if (gameState.isGameActive) setTimeout(myGame.game, gameState.gameTimeToFrame);
   },
   drawWallsCondition () {
-    if ((gameState.snake.head.x === 0 && gameState.dir === "left") ||
-      (gameState.snake.head.x === gameState.string - 1 && gameState.dir === "right") ||
-      (gameState.snake.head.y === gameState.blok - 1 && gameState.dir === "down") || 
-      (gameState.snake.head.y === 0 && gameState.dir === "up")) {
-      gameState.isGameActive = false;
-      gameState.score = "Dead";
-      document.getElementById("result").innerHTML = gameState.score;
+    if (gameState.isDeadWalls){
+      if ((gameState.snake.head.x === 0 && gameState.dir === "left") ||
+        (gameState.snake.head.x === gameState.string - 1 && gameState.dir === "right") ||
+        (gameState.snake.head.y === gameState.blok - 1 && gameState.dir === "down") || 
+        (gameState.snake.head.y === 0 && gameState.dir === "up")) {
+        gameState.isGameActive = false;
+        if (gameState.bestScore < gameState.score) gameState.bestScore = gameState.score;
+        document.getElementById("result").innerHTML = gameState.score;
+        document.getElementById("result2").innerHTML = gameState.bestScore;
+      }
+    }
+      else if (!gameState.isDeadWalls){
+        if (gameState.snake.tail[0].x === 0 && gameState.dir === "left") {
+          gameState.snake.head.x = gameState.string;
+        } 
+        else if (gameState.snake.tail[0].x  === gameState.string - 1 && gameState.dir === "right"){
+          gameState.snake.head.x = -1;
+        }
+        else if (gameState.snake.tail[0].y === 0 && gameState.dir === "up" ){
+          gameState.snake.head.y = gameState.blok;
+        } 
+        else if (gameState.snake.tail[0].y === gameState.blok - 1  && gameState.dir === "down") {
+          gameState.snake.head.y = -1;
+        }
     }
   },
   gameZone() {
@@ -203,37 +271,40 @@ let myGame = {
     }
   },
   drawTailCondition() {
-    if (gameState.snake.tail[0].x >= 0 && gameState.snake.tail[0].x < gameState.string &&
-      gameState.snake.tail[0].y >= 0 && gameState.snake.tail[0].y < gameState.blok) {
-      for (let j = 0; j < gameState.blok; j++) {
-        for (let i = 0; i < gameState.string; i++) {
-          document.getElementById(`${i} ${j}`).classList.remove('tail');
-          document.getElementById(`${i} ${j}`).classList.remove('head');
+      if (gameState.snake.tail[0].x >= 0 && gameState.snake.tail[0].x < gameState.string &&
+        gameState.snake.tail[0].y >= 0 && gameState.snake.tail[0].y < gameState.blok) {
+        for (let j = 0; j < gameState.blok; j++) {
+          for (let i = 0; i < gameState.string; i++) {
+            document.getElementById(`${i} ${j}`).classList.remove('tail');
+            document.getElementById(`${i} ${j}`).classList.remove('head');
+          }
+        }
+        for (let i = 0; i < gameState.snake.tail.length; i++) {
+          if (i == 0) {
+            document.getElementById(`${gameState.snake.tail[i].x} ${gameState.snake.tail[i].y}`).classList.add('head');
+          }
+          else {
+            document.getElementById(`${gameState.snake.tail[i].x} ${gameState.snake.tail[i].y}`).classList.add('tail');
+          }
+        }
+        for (let i = 1; i < gameState.snake.tail.length; i++) {
+          if (gameState.snake.tail[0].x == gameState.snake.tail[i].x &&
+            gameState.snake.tail[0].y == gameState.snake.tail[i].y) {
+            gameState.isGameActive = false;
+            if (gameState.bestScore < gameState.score) gameState.bestScore = gameState.score;
+            document.getElementById("result").innerHTML = gameState.score;
+            document.getElementById("result2").innerHTML = gameState.bestScore;
+          }
         }
       }
-      for (let i = 0; i < gameState.snake.tail.length; i++) {
-        if (i == 0) {
-          document.getElementById(`${gameState.snake.tail[i].x} ${gameState.snake.tail[i].y}`).classList.add('head');
-        }
-        else {
-          document.getElementById(`${gameState.snake.tail[i].x} ${gameState.snake.tail[i].y}`).classList.add('tail');
-        }
-      }
-      for (let i = 1; i < gameState.snake.tail.length; i++) {
-        if (gameState.snake.tail[0].x == gameState.snake.tail[i].x &&
-          gameState.snake.tail[0].y == gameState.snake.tail[i].y) {
-          gameState.isGameActive = false;
-          gameState.score = "Dead";
-          document.getElementById("result").innerHTML = gameState.score;
-        }
-      }
-    }
   },
   checkWinCondition() {
-    if (gameState.snake.tail.length ===gameState.snake.maxTail) {
+    if (gameState.snake.tail.length === gameState.snake.maxTail) {
       gameState.isGameActive = false;
       gameState.score = "You WIN";
+      if (gameState.bestScore < gameState.score) gameState.bestScore = gameState.score;
       document.getElementById("result").innerHTML = gameState.score;
+      document.getElementById("result2").innerHTML = gameState.bestScore;
     }
   },
   cleanGameState (){

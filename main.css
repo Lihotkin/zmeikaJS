@@ -46,9 +46,21 @@ body {
   margin: 0px auto;
   margin-top: 15%;
   border: 1px solid green;
-  height: 30%;
-  width: 40%;
+  height: 40%;
+  width: 37%;
   background-color: greenyellow;
+}
+.set{
+  display: table;
+  margin-left: 20%;
+}
+.rightSetBlock{
+  display: table-cell;
+  width: 50%;
+}
+.leftSetBlock{
+  display: table-cell;
+  width: 50%;
 }
 #area {
   margin-right: 20%;
@@ -62,23 +74,44 @@ body {
   background-color: black;
   height: 90%;
   width: 100%;
+}
+.areaLight{
   display: grid;
   grid-template-columns: repeat(20, 1fr);
   grid-template-rows: repeat(20, 1fr);
   place-items: stretch;
 }
+.areaMedium{
+  display: grid;
+  grid-template-columns: repeat(30, 1fr);
+  grid-template-rows: repeat(30, 1fr);
+  place-items: stretch;
+}
+.areaMax{
+  display: grid;
+  grid-template-columns: repeat(40, 1fr);
+  grid-template-rows: repeat(40, 1fr);
+  place-items: stretch;
+}
 .AreaBox{
   background-color: black;
 }
-/* .WallsBox{
-  background-color: white;
-} */
+.setMiniHead{
+  color:coral;
+  display: inline;
+  font-size: 80%;
+  margin-left: 34%;
+}
 #score {
   display: inline;
   margin-bottom: 2%;
   margin-left: 40%;
 }
 #result{
+  display: inline;
+  width: 6%;
+}
+#result2{
   display: inline;
   width: 6%;
 }
@@ -92,6 +125,9 @@ body {
 
 #con-btn {
   margin-top: 50px;
+}
+.setButtons{
+  margin-left: 45%;
 }
 .zagalovok {
   text-align: center;

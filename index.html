@@ -29,16 +29,31 @@
 
         <div id="game-page" class="hidden">
             <button id="esc-btn" class="stylebutton">Esc</button>
-            <div id = "areaGame"></div>
+            <div id = "areaGame" class="areaLight"></div>
             <p id = "score">SCORE:</p> <div id ="result" ></div>
+            <p id = "score"> BEST:</p> <div id ="result2" ></div>
         </div>
         <div id = "settingPage" class="hidden">
             <h1 class="zagalovok">Setting</h1>
             <ul class="clearlist0">
-                <li class="clearlist"><button id = "settingHard-btn" class="stylebutton">Hard</button></li>
-                <li class="clearlist"><button id = "settingMedium-btn" class="stylebutton">Medium</button></li>
-                <li class="clearlist"><button id = "settingLight-btn" class="stylebutton">Light</button></li>
-                <li class="clearlist"><button id = "returnSet-btn" class="stylebutton">Return</button></li>
+                <div class="set">
+                    <div class="rightSetBlock">
+                        <p class ="setMiniHead">Speed</p>
+                        <li class="clearlist"><button id = "settingHard-btn" class="stylebutton">Hard</button></li>
+                        <li class="clearlist"><button id = "settingMedium-btn" class="stylebutton">Medium</button></li>
+                        <li class="clearlist"><button id = "settingLight-btn" class="stylebutton">Light</button></li>
+                    </div>
+                    <div class="leftSetBlock">
+                        <p class ="setMiniHead">Size Zone</p>
+                        <li class="clearlist"><button id = 'setSizeL-btn' class="stylebutton">20*20</button></li>
+                        <li class="clearlist"><button id = 'setSizeM-btn' class="stylebutton">30*30</button></li>
+                        <li class="clearlist"><button id = 'setSizeMax-btn' class="stylebutton">40*40</button></li>
+                    </div>
+                </div>
+                <button id = "redactorWallsDW" class="stylebutton setButtons">DeadWalls</button>
+                <button id = "redactorWallsTW" class="stylebutton hidden setButtons">TeleportWalls</button>
+                <button id = "returnSet-btn" class="stylebutton setButtons">Return</button>
+            </ul>
             </ul>
         </div>
     </div>
