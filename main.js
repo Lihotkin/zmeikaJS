@@ -81,7 +81,7 @@ function main() {
     (gameState.dir != "left" || gameState.snake.tail.length === 1)) gameState.dir = "right";
     else if ((e.code === 'KeyS' || e.keyCode == 40) && 
     (gameState.dir != "up" || gameState.snake.tail.length === 1)) gameState.dir = "down";
-    else if (e.keyCode === 27) {
+    else if (e.keyCode === 27 && gameState.isGameActive) {
       pageManager.openPages(['gameMenu', 'gamePage']);
       gameState.isGameActive = false;
     }
@@ -176,6 +176,19 @@ function main() {
     document.getElementById('redactorWallsTW').classList.add('hidden');
     gameState.isDeadWalls = true;
   });
+  const pageNWButtonElement = document.getElementById('pageNW-btn');
+  pageNWButtonElement.addEventListener('click', () => {
+    pageManager.openPage('gamePage');
+    myGame.cleanGameState();
+    myMenus.cleanGameZone();
+    gameState.isGameActive = true;
+    myGame.gameZone();
+    setTimeout(myGame.game, gameState.gameTimeToFrame);
+  });
+  const pageMMenuButton = document.getElementById('pageMenu-btn');
+  pageMMenuButton.addEventListener('click', () => {
+    
+  });
 }
 let myGame = {
   game () {
@@ -197,6 +210,7 @@ let myGame = {
         if (gameState.bestScore < gameState.score) gameState.bestScore = gameState.score;
         document.getElementById("result").innerHTML = gameState.score;
         document.getElementById("result2").innerHTML = gameState.bestScore;
+        pageManager.openPages(['losePage', 'gamePage']);
       }
     }
       else if (!gameState.isDeadWalls){
@@ -291,6 +305,7 @@ let myGame = {
           if (gameState.snake.tail[0].x == gameState.snake.tail[i].x &&
             gameState.snake.tail[0].y == gameState.snake.tail[i].y) {
             gameState.isGameActive = false;
+            pageManager.openPages(['losePage', 'gamePage']);
             if (gameState.bestScore < gameState.score) gameState.bestScore = gameState.score;
             document.getElementById("result").innerHTML = gameState.score;
             document.getElementById("result2").innerHTML = gameState.bestScore;
@@ -305,6 +320,7 @@ let myGame = {
       if (gameState.bestScore < gameState.score) gameState.bestScore = gameState.score;
       document.getElementById("result").innerHTML = gameState.score;
       document.getElementById("result2").innerHTML = gameState.bestScore;
+      pageManager.openPages(['winPage', 'gamePage']);
     }
   },
   cleanGameState (){
