@@ -35,34 +35,35 @@
         </div>
         <div id = "settingPage" class="hidden">
             <h1 class="zagalovok">Setting</h1>
-            <ul class="clearlist0">
                 <div class="set">
                     <div class="rightSetBlock">
                         <p class ="setMiniHead">Speed</p>
-                        <li class="clearlist"><button id = "settingHard-btn" class="stylebutton">Hard</button></li>
-                        <li class="clearlist"><button id = "settingMedium-btn" class="stylebutton">Medium</button></li>
-                        <li class="clearlist"><button id = "settingLight-btn" class="stylebutton">Light</button></li>
+                        <p class ="setMiniHead">Size</p>
+                        <p class ="setMiniHead">Walls</p>
                     </div>
                     <div class="leftSetBlock">
-                        <p class ="setMiniHead">Size Zone</p>
-                        <li class="clearlist"><button id = 'setSizeL-btn' class="stylebutton">20*20</button></li>
-                        <li class="clearlist"><button id = 'setSizeM-btn' class="stylebutton">30*30</button></li>
-                        <li class="clearlist"><button id = 'setSizeMax-btn' class="stylebutton">40*40</button></li>
+                        <ul class="clearlist0">
+                            <li class="clearlist"><button id = "settingHard-btn" class="stylebutton hidden">Hard</button></li>
+                            <li class="clearlist"><button id = "settingMedium-btn" class="stylebutton hidden">Medium</button></li>
+                            <li class="clearlist"><button id = "settingLight-btn" class="stylebutton">Light</button></li>
+                            <li class="clearlist"><button id = 'setSizeL-btn' class="stylebutton">20*20</button></li>
+                            <li class="clearlist"><button id = 'setSizeM-btn' class="stylebutton hidden">30*30</button></li>
+                            <li class="clearlist"><button id = 'setSizeMax-btn' class="stylebutton hidden">40*40</button></li>
+                            <li class="clearlist"><button id = "redactorWallsDW" class="stylebutton setButtons">DeadWalls</button></li>
+                            <li class="clearlist"><button id = "redactorWallsTW" class="stylebutton hidden setButtons">TeleportWalls</button></li>
+                        </ul>
                     </div>
                 </div>
-                <button id = "redactorWallsDW" class="stylebutton setButtons">DeadWalls</button>
-                <button id = "redactorWallsTW" class="stylebutton hidden setButtons">TeleportWalls</button>
-                <button id = "returnSet-btn" class="stylebutton setButtons">Return</button>
+                <ul class="clearlist0">
+                <li class="clearlist"><button id = "returnSet-btn" class="stylebutton setButtons">Return</button></li>
+                </ul>
     </div>
-    <div id = "winPage" class = "hidden">
-        <h1 class="zagalovok">You Win</h1>
-        <button id ="pageNW-btn" class="stylebutton">New Game</button>
-        <button id ="pageMenu-btn" class="stylebutton">MainMenu</button>
-    </div>
-    <div id = "losePage" class="hidden zagalovok">
-        <h1 class="zagalovok" >You Lose</h1>
-        <button id ="pageNW-btn" class="stylebutton">New Game</button>
-        <button id ="pageMenu-btn" class="stylebutton">MainMenu</button>
+    <div id = "statusPage" class = "hidden">
+        <h1 class="zagalovok"><div id = "gameStatus"></div></h1>
+        <ul class="clearlist0 buttonCenter">
+            <li class="clearlist"><button id ="pageNW-btn" class="stylebutton">New Game</button></li>
+            <li class="clearlist"><button id ="pageMenu-btn" class="stylebutton">MainMenu</button></li>
+        </ul>
     </div>
 </body>
 </html>

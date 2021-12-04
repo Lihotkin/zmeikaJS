@@ -2,11 +2,11 @@ const gameState = {
   isGameActive : false,
   isDeadWalls: true,
   gameTimeToFrame : 300,
-  string: 20,
-  blok: 20,
+  areaSize: 20,
   score: 0,
   bestScore: 0,
   dir: "stop",
+  isGameResult: "You Lose", 
   snake: {
     tail: [],
     head : {
@@ -30,14 +30,13 @@ document.addEventListener('readystatechange', () => {
 
 function main() {
   // document.querySelector()
-
-
   const pageManager = {
     pages: {
       mainMenu: document.getElementById('mainMenu'),
       gameMenu: document.getElementById('gameMenu'),
       gamePage: document.getElementById('game-page'),
-      settingPage: document.getElementById('settingPage')
+      settingPage: document.getElementById('settingPage'),
+      statusPage: document.getElementById('statusPage')
     },
     openPage(name) {
       for (const [pageName, pageElement] of Object.entries(this.pages)) {
@@ -104,6 +103,7 @@ function main() {
   escButtonElement.addEventListener('click', () => {
     pageManager.openPages(['gameMenu', 'gamePage']);
     gameState.isGameActive = false;
+    if (gameState.bestScore < gameState.score) gameState.bestScore = gameState.score;
   });
   const rmButtonElement = document.getElementById('return-btn');
   rmButtonElement.addEventListener('click', () => {
@@ -131,15 +131,24 @@ function main() {
   });
   const hardButtonElement = document.getElementById('settingHard-btn');
   hardButtonElement.addEventListener('click', () => {
-    gameState.gameTimeToFrame = 70;
+    document.getElementById('settingLight-btn').classList.add('hidden');
+    document.getElementById('settingMedium-btn').classList.remove('hidden');
+    document.getElementById('settingHard-btn').classList.add('hidden');
+    gameState.gameTimeToFrame = 150;
   });
   const mediumButtonElement = document.getElementById('settingMedium-btn');
   mediumButtonElement.addEventListener('click', () => {
-    gameState.gameTimeToFrame = 100;
+    document.getElementById('settingLight-btn').classList.remove('hidden');
+    document.getElementById('settingMedium-btn').classList.add('hidden');
+    document.getElementById('settingHard-btn').classList.add('hidden');
+    gameState.gameTimeToFrame = 300;
   });
   const lightButtonElement = document.getElementById('settingLight-btn');
   lightButtonElement.addEventListener('click', () => {
-    gameState.gameTimeToFrame = 300;
+    document.getElementById('settingLight-btn').classList.add('hidden');
+    document.getElementById('settingMedium-btn').classList.add('hidden');
+    document.getElementById('settingHard-btn').classList.remove('hidden');
+    gameState.gameTimeToFrame = 100;
   });
   const returnSetButtonElement = document.getElementById('returnSet-btn');
   returnSetButtonElement.addEventListener('click', () => {
@@ -148,21 +157,27 @@ function main() {
   });
   const setSizeLButtonElement = document.getElementById('setSizeL-btn');
   setSizeLButtonElement.addEventListener('click', () =>{
-    areaManager.newSize('areaLight');
-    gameState.blok = 20;
-    gameState.string = 20;
+    document.getElementById('setSizeL-btn').classList.add('hidden');
+    document.getElementById('setSizeM-btn').classList.remove('hidden');
+    document.getElementById('setSizeMax-btn').classList.add('hidden');
+    gameState.areaSize = 30;
+    areaManager.newSize('areaMedium');
   });
   const setSizeMButtonElement = document.getElementById('setSizeM-btn');
   setSizeMButtonElement.addEventListener('click', () =>{
-    areaManager.newSize('areaMedium');
-    gameState.blok = 30;
-    gameState.string = 30;
+    areaManager.newSize('areaMax');
+    document.getElementById('setSizeL-btn').classList.add('hidden');
+    document.getElementById('setSizeM-btn').classList.add('hidden');
+    document.getElementById('setSizeMax-btn').classList.remove('hidden');
+    gameState.areaSize = 40;
   });
   const setSizeMaxButtonElement = document.getElementById('setSizeMax-btn');
   setSizeMaxButtonElement.addEventListener('click', () =>{
-    areaManager.newSize('areaMax');
-    gameState.blok = 40;
-    gameState.string = 40;
+    areaManager.newSize('areaLight');
+    document.getElementById('setSizeL-btn').classList.remove('hidden');
+    document.getElementById('setSizeM-btn').classList.add('hidden');
+    document.getElementById('setSizeMax-btn').classList.add('hidden');
+    gameState.areaSize = 20;
   });
   const redactWallsDWButtonElement = document.getElementById('redactorWallsDW');
   redactWallsDWButtonElement.addEventListener('click', () => {
@@ -187,9 +202,10 @@ function main() {
   });
   const pageMMenuButton = document.getElementById('pageMenu-btn');
   pageMMenuButton.addEventListener('click', () => {
-    
+    pageManager.openPage('mainMenu');
+    gameState.isGameActive = false;
   });
-}
+
 let myGame = {
   game () {
     myGame.drawWallsCondition();
@@ -197,33 +213,28 @@ let myGame = {
     myGame.eat();
     myGame.drawTailCondition();
     myGame.checkWinCondition();
-    // if (gameState.isGameActive) setTimeout(this.game.bind(this), gameState.gameTimeToFrame);
     if (gameState.isGameActive) setTimeout(myGame.game, gameState.gameTimeToFrame);
   },
   drawWallsCondition () {
     if (gameState.isDeadWalls){
       if ((gameState.snake.head.x === 0 && gameState.dir === "left") ||
-        (gameState.snake.head.x === gameState.string - 1 && gameState.dir === "right") ||
-        (gameState.snake.head.y === gameState.blok - 1 && gameState.dir === "down") || 
+        (gameState.snake.head.x === gameState.areaSize - 1 && gameState.dir === "right") ||
+        (gameState.snake.head.y === gameState.areaSize - 1 && gameState.dir === "down") || 
         (gameState.snake.head.y === 0 && gameState.dir === "up")) {
-        gameState.isGameActive = false;
-        if (gameState.bestScore < gameState.score) gameState.bestScore = gameState.score;
-        document.getElementById("result").innerHTML = gameState.score;
-        document.getElementById("result2").innerHTML = gameState.bestScore;
-        pageManager.openPages(['losePage', 'gamePage']);
+        myGame.checkLose();
       }
     }
       else if (!gameState.isDeadWalls){
         if (gameState.snake.tail[0].x === 0 && gameState.dir === "left") {
-          gameState.snake.head.x = gameState.string;
+          gameState.snake.head.x = gameState.areaSize;
         } 
-        else if (gameState.snake.tail[0].x  === gameState.string - 1 && gameState.dir === "right"){
+        else if (gameState.snake.tail[0].x  === gameState.areaSize - 1 && gameState.dir === "right"){
           gameState.snake.head.x = -1;
         }
         else if (gameState.snake.tail[0].y === 0 && gameState.dir === "up" ){
-          gameState.snake.head.y = gameState.blok;
+          gameState.snake.head.y = gameState.areaSize;
         } 
-        else if (gameState.snake.tail[0].y === gameState.blok - 1  && gameState.dir === "down") {
+        else if (gameState.snake.tail[0].y === gameState.areaSize - 1  && gameState.dir === "down") {
           gameState.snake.head.y = -1;
         }
     }
@@ -233,18 +244,18 @@ let myGame = {
     gameState.score = 0;
     gameState.dir = "stop";
     gameState.snake.head = {
-      x: Math.floor(gameState.string / 2 - 1),
-      y: Math.floor(gameState.blok / 2),
+      x: Math.floor(gameState.areaSize / 2 - 1),
+      y: Math.floor(gameState.areaSize / 2),
       tail: [],
-      maxTail: gameState.blok * gameState.string
+      maxTail: Math.pow(gameState.areaSize, 2)
     };
     gameState.snake.food = {
-      x: Math.floor(Math.random() * gameState.string + 0),
-      y: Math.floor(Math.random() * gameState.blok + 0)
+      x: Math.floor(Math.random() * gameState.areaSize + 0),
+      y: Math.floor(Math.random() * gameState.areaSize + 0)
     };
     gameState.snake.tail.unshift({ x: gameState.snake.head.x, y: gameState.snake.head.y });
-    for (var j = 0; j < gameState.blok; j++) {
-      for (var i = 0; i < gameState.string; i++) {
+    for (var j = 0; j < gameState.areaSize; j++) {
+      for (var i = 0; i < gameState.areaSize; i++) {
         var newDiv = document.createElement('div');
         newDiv.id = `${i} ${j}`;
         newDiv.classList.add('AreaBox')
@@ -273,8 +284,8 @@ let myGame = {
         while (gameState.snake.food.x === gameState.snake.tail[i].x && 
           gameState.snake.food.y === gameState.snake.tail[i].y) {
             gameState.snake.food = {
-            x: Math.floor(Math.random() * gameState.string + 0),
-            y: Math.floor(Math.random() * gameState.blok + 0)
+            x: Math.floor(Math.random() * gameState.areaSize + 0),
+            y: Math.floor(Math.random() * gameState.areaSize + 0)
           };
         }
       }
@@ -285,10 +296,10 @@ let myGame = {
     }
   },
   drawTailCondition() {
-      if (gameState.snake.tail[0].x >= 0 && gameState.snake.tail[0].x < gameState.string &&
-        gameState.snake.tail[0].y >= 0 && gameState.snake.tail[0].y < gameState.blok) {
-        for (let j = 0; j < gameState.blok; j++) {
-          for (let i = 0; i < gameState.string; i++) {
+      if (gameState.snake.tail[0].x >= 0 && gameState.snake.tail[0].x < gameState.areaSize &&
+        gameState.snake.tail[0].y >= 0 && gameState.snake.tail[0].y < gameState.areaSize) {
+        for (let j = 0; j < gameState.areaSize; j++) {
+          for (let i = 0; i < gameState.areaSize; i++) {
             document.getElementById(`${i} ${j}`).classList.remove('tail');
             document.getElementById(`${i} ${j}`).classList.remove('head');
           }
@@ -305,10 +316,7 @@ let myGame = {
           if (gameState.snake.tail[0].x == gameState.snake.tail[i].x &&
             gameState.snake.tail[0].y == gameState.snake.tail[i].y) {
             gameState.isGameActive = false;
-            pageManager.openPages(['losePage', 'gamePage']);
-            if (gameState.bestScore < gameState.score) gameState.bestScore = gameState.score;
-            document.getElementById("result").innerHTML = gameState.score;
-            document.getElementById("result2").innerHTML = gameState.bestScore;
+            myGame.checkLose();
           }
         }
       }
@@ -316,12 +324,21 @@ let myGame = {
   checkWinCondition() {
     if (gameState.snake.tail.length === gameState.snake.maxTail) {
       gameState.isGameActive = false;
-      gameState.score = "You WIN";
       if (gameState.bestScore < gameState.score) gameState.bestScore = gameState.score;
       document.getElementById("result").innerHTML = gameState.score;
       document.getElementById("result2").innerHTML = gameState.bestScore;
-      pageManager.openPages(['winPage', 'gamePage']);
+      gameState.isGameResult = "You Win";
+      document.getElementById('gameStatus').innerHTML = gameState.isGameResult;
+      pageManager.openPages(['statusPage', 'gamePage']);
     }
+  },
+  checkLose() {
+    if (gameState.bestScore < gameState.score) gameState.bestScore = gameState.score;
+        document.getElementById("result").innerHTML = gameState.score;
+        document.getElementById("result2").innerHTML = gameState.bestScore;
+        gameState.isGameResult = "You Lose";
+        document.getElementById('gameStatus').innerHTML = gameState.isGameResult;
+        pageManager.openPages(['statusPage', 'gamePage']);
   },
   cleanGameState (){
     gameState.dir = "stop";
@@ -336,3 +353,4 @@ const myMenus = {
   }
 }
 
+}
