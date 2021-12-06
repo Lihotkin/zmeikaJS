@@ -56,7 +56,7 @@ body {
   margin: 0px auto;
   margin-top: 15%;
   border: 1px solid green;
-  height: 35%;
+  height: 40%;
   width: 37%;
   background-color: greenyellow;
 }
@@ -179,4 +179,7 @@ body {
 }
 .tail {
   background-color: lawngreen;
+}
+.interWalls{
+  background-color: darkorange;
 }
