@@ -404,11 +404,18 @@ function main() {
       for (let i = 0; i < nWalls; i++) {
         let xWalls = Math.floor(Math.random() * gameState.areaSize + 0);
         let yWalls = Math.floor(Math.random() * gameState.areaSize + 0);
-        if (xWalls + yWalls > gameState.areaSize) xWalls = gameState.areaSize - yWalls;
         let randomizeWalls = Math.floor(Math.random() * 2 + 0);
         let lengthWalls = Math.floor(Math.random() * 2 + 3);
+        if (xWalls + lengthWalls > gameState.areaSize) xWalls = gameState.areaSize - lengthWalls;
+        if (yWalls + lengthWalls > gameState.areaSize) yWalls = gameState.areaSize - lengthWalls;
         for (let i = 0; i < lengthWalls; i++) {
-          if (xWalls != gameState.areaSize / 2 - 1 && xWalls + i != gameState.areaSize / 2){
+          if ((xWalls != gameState.areaSize / 2 && yWalls != gameState.areaSize / 2) &&
+          ( xWalls != gameState.areaSize / 2 + 1  && yWalls != gameState.areaSize / 2 ) &&
+          ( xWalls != gameState.areaSize / 2 - 1  && yWalls != gameState.areaSize / 2 ) &&
+          ( xWalls != gameState.areaSize / 2 + 1  && yWalls != gameState.areaSize / 2 ) &&
+          ( xWalls != gameState.areaSize / 2 -1  && yWalls != gameState.areaSize / 2 + 1) &&
+          ( xWalls != gameState.areaSize / 2 -1  && yWalls != gameState.areaSize / 2 ) &&
+          ( xWalls != gameState.areaSize / 2 -1  && yWalls != gameState.areaSize / 2 - 1) ){
             if (randomizeWalls === 1 || randomizeWalls === 2) gameState.walls.unshift({ x: xWalls + i, y: yWalls });
             if (randomizeWalls === 0) gameState.walls.unshift({ x: yWalls, y: xWalls + i });
           }
