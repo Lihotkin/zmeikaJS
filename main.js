@@ -9,6 +9,45 @@ const gameState = {
   dir: "stop",
   isGameResult: "You Lose",
   walls: [],
+  foods: {
+    _points: [],
+    add(point) {
+      this._points.push(point);
+    },
+    render() {
+      for (const point of this._points) {
+        document.getElementById(`${point.x} ${point.y}`).classList.add('food');
+      }
+    },
+    clear() {
+      for (const point of this._points) {
+        document.getElementById(`${point.x} ${point.y}`).classList.remove('food');
+      }
+    },
+    remove(point) {
+      this._points = this._points.filter((foodPoint) => !(foodPoint.x === point.x && foodPoint.y === point.y));
+    }
+  },
+  area: {
+    clear() {
+      for (let j = 0; j < gameState.areaSize; j++) {
+        for (let i = 0; i < gameState.areaSize; i++) {
+          document.getElementById(`${i} ${j}`).classList.remove('tail');
+          document.getElementById(`${i} ${j}`).classList.remove('head');
+        }
+      }
+    },
+    drawSnake(){
+      for (let i = 0; i < gameState.snake.tail.length; i++) {
+        if (i == 0) {
+          document.getElementById(`${gameState.snake.tail[i].x} ${gameState.snake.tail[i].y}`).classList.add('head');
+        }
+        else {
+          document.getElementById(`${gameState.snake.tail[i].x} ${gameState.snake.tail[i].y}`).classList.add('tail');
+        }
+      }
+    }
+  },
   snake: {
     tail: [],
     checkCollisions(point) {
@@ -20,30 +59,9 @@ const gameState = {
     },
     maxTail: this.blok * this.string,
     food: [],
-    foodTurn: 10
+    foodTurn: 2
   }
 };
-
-const foods = {
-  _points: [],
-  add(point) {
-    this._points.push(point);
-  },
-  render() {
-    for (const point of this._points) {
-      document.getElementById(`${point.x} ${point.y}`).classList.add('food');
-    }
-  },
-  clear() {
-    for (const point of this._points) {
-      document.getElementById(`${point.x} ${point.y}`).classList.remove('food');
-    }
-  },
-  remove(point) {
-    this._points = this._points.filter((foodPoint) => !(foodPoint.x === point.x && foodPoint.y === point.y));
-  }
-}
-
 
 document.addEventListener('readystatechange', () => {
   if (document.readyState === 'complete') {
@@ -238,24 +256,23 @@ function main() {
   let myGame = {
     game() {
       // clear
-      foods.clear();
+      gameState.foods.clear();
+      gameState.area.clear();
 
       // ???
       gameState.snake.foodTurn--;
       myGame.drawWallsCondition();
-      if (gameState.isInteriorWalls) myGame.interiorWallsCondition();
+      if (gameState.isInteriorWalls) myGame.drawInteriorWalls();
       myGame.action();
       myGame.eat();
       myGame.drawTailCondition();
       myGame.checkWinCondition();
-
-      if (gameState.snake.foodTurn == 0) myGame.generateFood();
-
       // render
-      foods.render();
-
+      gameState.foods.render();
+      gameState.area.drawSnake();
       // repeat
       if (gameState.isGameActive) setTimeout(myGame.game, gameState.gameTimeToFrame);
+      if (gameState.snake.foodTurn == 0) myGame.generateFood();
     },
     drawWallsCondition() {
       if (gameState.isDeadWalls) {
@@ -263,7 +280,8 @@ function main() {
           (gameState.snake.head.x === gameState.areaSize - 1 && gameState.dir === "right") ||
           (gameState.snake.head.y === gameState.areaSize - 1 && gameState.dir === "down") ||
           (gameState.snake.head.y === 0 && gameState.dir === "up")) {
-          myGame.statusLose();
+            gameState.isGameActive = false;
+            myGame.statusLose();
         }
       }
       else if (!gameState.isDeadWalls) {
@@ -284,6 +302,7 @@ function main() {
     gameZone() {
       var div = document.getElementById('areaGame');
       gameState.score = 0;
+      gameState.foods._points = [];
       gameState.dir = "stop";
       gameState.snake.head = {
         x: Math.floor(gameState.areaSize / 2 - 1),
@@ -301,7 +320,7 @@ function main() {
         }
       }
       gameState.walls = [];
-      if (gameState.isInteriorWalls) { myGame.interiorWallsGame(); myGame.interiorWallsCondition(); }
+      if (gameState.isInteriorWalls) { myGame.interiorWallsGame(); myGame.drawInteriorWalls(); }
       document.getElementById(`${gameState.snake.head.x} ${gameState.snake.head.y}`).classList.add('head');
       if (gameState.isInteriorWalls) gameState.snake.maxTail - gameState.walls.length;
       else if (!gameState.isInteriorWalls) gameState.snake.maxTail = Math.pow(gameState.snake.maxTail, 2);
@@ -316,10 +335,10 @@ function main() {
     eat() {
       gameState.snake.tail.unshift({ x: gameState.snake.head.x, y: gameState.snake.head.y });
 
-      const food = foods._points.find((foodPoint) => gameState.snake.checkCollisions(foodPoint));
+      const food = gameState.foods._points.find((foodPoint) => gameState.snake.checkCollisions(foodPoint));
       if (food != null) {
         gameState.score++;
-        foods.remove(food);
+        gameState.foods.remove(food);
       } else gameState.snake.tail.pop();
     },
     generateFood() {
@@ -329,34 +348,20 @@ function main() {
           y: Math.floor(Math.random() * gameState.areaSize + 0)
         };
         if (!gameState.snake.checkCollisions(foodPoint)) {
-          foods.add(foodPoint)
+          gameState.foods.add(foodPoint)
           break
         };
       }
-      gameState.snake.foodTurn = 11;
+      gameState.snake.foodTurn = 10;
     },
     drawTailCondition() {
       if (gameState.snake.tail[0].x >= 0 && gameState.snake.tail[0].x < gameState.areaSize &&
         gameState.snake.tail[0].y >= 0 && gameState.snake.tail[0].y < gameState.areaSize) {
-        for (let j = 0; j < gameState.areaSize; j++) {
-          for (let i = 0; i < gameState.areaSize; i++) {
-            document.getElementById(`${i} ${j}`).classList.remove('tail');
-            document.getElementById(`${i} ${j}`).classList.remove('head');
-          }
-        }
-        for (let i = 0; i < gameState.snake.tail.length; i++) {
-          if (i == 0) {
-            document.getElementById(`${gameState.snake.tail[i].x} ${gameState.snake.tail[i].y}`).classList.add('head');
-          }
-          else {
-            document.getElementById(`${gameState.snake.tail[i].x} ${gameState.snake.tail[i].y}`).classList.add('tail');
-          }
-        }
         for (let i = 1; i < gameState.snake.tail.length; i++) {
           if (gameState.snake.tail[0].x == gameState.snake.tail[i].x &&
             gameState.snake.tail[0].y == gameState.snake.tail[i].y) {
             gameState.isGameActive = false;
-            this.checkLose();
+            myGame.statusLose();
           }
         }
         if (gameState.isInteriorWalls) {
@@ -395,29 +400,29 @@ function main() {
       gameState.snake.tail = [];
     },
     interiorWallsGame() {
-      let nWalls = Math.floor(Math.random() * 10 + 6);
+      let nWalls = Math.floor(Math.random() * gameState.areaSize/4 + 5);
       for (let i = 0; i < nWalls; i++) {
-        let gameWalls = Math.floor(Math.random() * gameState.areaSize + 0);
-        let lengthWalls = Math.floor(Math.random() * 2 + 3);
-        if (gameWalls + lengthWalls > gameState.areaSize) gameWalls = gameState.areaSize - lengthWalls;
+        let xWalls = Math.floor(Math.random() * gameState.areaSize + 0);
+        let yWalls = Math.floor(Math.random() * gameState.areaSize + 0);
+        if (xWalls + yWalls > gameState.areaSize) xWalls = gameState.areaSize - yWalls;
         let randomizeWalls = Math.floor(Math.random() * 2 + 0);
-        let lastWall = gameWalls;
+        let lengthWalls = Math.floor(Math.random() * 2 + 3);
         for (let i = 0; i < lengthWalls; i++) {
-          if (gameWalls != gameState.areaSize / 2 - 1 && gameWalls + i != gameState.areaSize / 2 &&
-            gameWalls != gameState.areaSize / 2 && gameWalls + i != gameState.areaSize / 2 - 1) {
-            if (randomizeWalls === 1 || randomizeWalls === 2) gameState.walls.unshift({ x: gameWalls + i, y: gameWalls });
-            if (randomizeWalls === 0) gameState.walls.unshift({ x: gameWalls, y: gameWalls + i });
+          if (xWalls != gameState.areaSize / 2 - 1 && xWalls + i != gameState.areaSize / 2){
+            if (randomizeWalls === 1 || randomizeWalls === 2) gameState.walls.unshift({ x: xWalls + i, y: yWalls });
+            if (randomizeWalls === 0) gameState.walls.unshift({ x: yWalls, y: xWalls + i });
           }
         }
       }
     },
-    interiorWallsCondition() {
+    drawInteriorWalls() {
       for (let j = 0; j < gameState.areaSize; j++) {
         for (let i = 0; i < gameState.areaSize; i++) {
           document.getElementById(`${i} ${j}`).classList.remove('interWalls');
         }
       }
       for (let i = 0; i < gameState.walls.length; i++) {
+        console.log(`${gameState.walls[i].x} ${gameState.walls[i].y}`);
         document.getElementById(`${gameState.walls[i].x} ${gameState.walls[i].y}`).classList.add('interWalls');
       }
     }
