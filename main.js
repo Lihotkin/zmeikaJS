@@ -2,7 +2,7 @@ const gameState = {
   isGameActive: false,
   isDeadWalls: true,
   isInteriorWalls: false,
-  gameTimeToFrame: 300,
+  gameTimeToFrame: 100,
   areaSize: 20,
   score: 0,
   bestScore: 0,
@@ -27,27 +27,7 @@ const gameState = {
     remove(point) {
       this._points = this._points.filter((foodPoint) => !(foodPoint.x === point.x && foodPoint.y === point.y));
     }
-  },
-  area: {
-    clear() {
-      for (let j = 0; j < gameState.areaSize; j++) {
-        for (let i = 0; i < gameState.areaSize; i++) {
-          document.getElementById(`${i} ${j}`).classList.remove('tail');
-          document.getElementById(`${i} ${j}`).classList.remove('head');
-        }
-      }
-    },
-    drawSnake(){
-      for (let i = 0; i < gameState.snake.tail.length; i++) {
-        if (i == 0) {
-          document.getElementById(`${gameState.snake.tail[i].x} ${gameState.snake.tail[i].y}`).classList.add('head');
-        }
-        else {
-          document.getElementById(`${gameState.snake.tail[i].x} ${gameState.snake.tail[i].y}`).classList.add('tail');
-        }
-      }
-    }
-  },
+  },  
   snake: {
     tail: [],
     checkCollisions(point) {
@@ -59,8 +39,30 @@ const gameState = {
     },
     maxTail: this.blok * this.string,
     food: [],
-    foodTurn: 2
-  }
+    foodTurn: 2,
+    clear() {
+      for (let i = 0; i < gameState.snake.tail.length; i++) {
+        if (i == 0) {
+          document.getElementById(`${gameState.snake.tail[i].x} ${gameState.snake.tail[i].y}`).classList.remove('head');
+        }
+        else {
+          document.getElementById(`${gameState.snake.tail[i].x} ${gameState.snake.tail[i].y}`).classList.remove('tail');
+        }
+      }
+    },
+    drawSnake(){
+      for (let i = 0; i < gameState.snake.tail.length; i++) {
+          if (i == 0) {
+            document.getElementById(`${gameState.snake.tail[i].x} ${gameState.snake.tail[i].y}`).classList.add('head');
+          }
+          else {
+            document.getElementById(`${gameState.snake.tail[i].x} ${gameState.snake.tail[i].y}`).classList.add('tail');
+          }
+        }
+      }
+  },
+  lastTailX: 0,
+  lastTailY: 0
 };
 
 document.addEventListener('readystatechange', () => {
@@ -77,7 +79,8 @@ function main() {
       gameMenu: document.getElementById('gameMenu'),
       gamePage: document.getElementById('game-page'),
       settingPage: document.getElementById('settingPage'),
-      statusPage: document.getElementById('statusPage')
+      statusPage: document.getElementById('statusPage'),
+      helpPage: document.getElementById('helpPage')
     },
     openPage(name) {
       for (const [pageName, pageElement] of Object.entries(this.pages)) {
@@ -136,10 +139,6 @@ function main() {
     myGame.gameZone();
     setTimeout(myGame.game, gameState.gameTimeToFrame);
   });
-  const exitButtonElement = document.getElementById('ext-btn');
-  exitButtonElement.addEventListener('click', () => {
-    close();
-  });
   const rmButtonElement = document.getElementById('return-btn');
   rmButtonElement.addEventListener('click', () => {
     pageManager.openPage('mainMenu');
@@ -164,67 +163,50 @@ function main() {
   setButtonElement.addEventListener('click', () => {
     pageManager.openPage('settingPage');
   });
-  const hardButtonElement = document.getElementById('settingHard-btn');
+  const hardButtonElement = document.getElementById('settingSpeed-btn');
   hardButtonElement.addEventListener('click', () => {
-    document.getElementById('settingLight-btn').classList.add('hidden');
-    document.getElementById('settingMedium-btn').classList.remove('hidden');
-    document.getElementById('settingHard-btn').classList.add('hidden');
-    gameState.gameTimeToFrame = 150;
-  });
-  const mediumButtonElement = document.getElementById('settingMedium-btn');
-  mediumButtonElement.addEventListener('click', () => {
-    document.getElementById('settingLight-btn').classList.remove('hidden');
-    document.getElementById('settingMedium-btn').classList.add('hidden');
-    document.getElementById('settingHard-btn').classList.add('hidden');
-    gameState.gameTimeToFrame = 300;
-  });
-  const lightButtonElement = document.getElementById('settingLight-btn');
-  lightButtonElement.addEventListener('click', () => {
-    document.getElementById('settingLight-btn').classList.add('hidden');
-    document.getElementById('settingMedium-btn').classList.add('hidden');
-    document.getElementById('settingHard-btn').classList.remove('hidden');
+    if (gameState.gameTimeToFrame === 300){
+      document.getElementById('settingSpeed-btn').innerText = 'Medium';
+      gameState.gameTimeToFrame = 150;
+    }else if  (gameState.gameTimeToFrame === 150){
+      document.getElementById('settingSpeed-btn').innerText = 'Hard';
     gameState.gameTimeToFrame = 100;
+    }else if (gameState.gameTimeToFrame === 100) {
+    document.getElementById('settingSpeed-btn').innerText = 'Light';
+    gameState.gameTimeToFrame = 300;
+    }
   });
   const returnSetButtonElement = document.getElementById('returnSet-btn');
   returnSetButtonElement.addEventListener('click', () => {
     pageManager.openPage('mainMenu');
     gameState.isGameActive = false;
   });
-  const setSizeLButtonElement = document.getElementById('setSizeL-btn');
+  const setSizeLButtonElement = document.getElementById('settingSize-btn');
   setSizeLButtonElement.addEventListener('click', () => {
-    document.getElementById('setSizeL-btn').classList.add('hidden');
-    document.getElementById('setSizeM-btn').classList.remove('hidden');
-    document.getElementById('setSizeMax-btn').classList.add('hidden');
-    gameState.areaSize = 30;
-    areaManager.newSize('areaMedium');
+    if (gameState.areaSize === 20){
+      areaManager.newSize('areaMedium');
+      gameState.areaSize = 30;
+      document.getElementById('settingSize-btn').innerText = '30*30';
+    }else if (gameState.areaSize === 30){
+      areaManager.newSize('areaMax');
+      gameState.areaSize = 40;
+      document.getElementById('settingSize-btn').innerText = '40*40';
+    }else if (gameState.areaSize === 40){
+      areaManager.newSize('areaLight');
+      gameState.areaSize = 20;
+      document.getElementById('settingSize-btn').innerText = '20*20';
+    }
   });
-  const setSizeMButtonElement = document.getElementById('setSizeM-btn');
-  setSizeMButtonElement.addEventListener('click', () => {
-    areaManager.newSize('areaMax');
-    document.getElementById('setSizeL-btn').classList.add('hidden');
-    document.getElementById('setSizeM-btn').classList.add('hidden');
-    document.getElementById('setSizeMax-btn').classList.remove('hidden');
-    gameState.areaSize = 40;
-  });
-  const setSizeMaxButtonElement = document.getElementById('setSizeMax-btn');
-  setSizeMaxButtonElement.addEventListener('click', () => {
-    areaManager.newSize('areaLight');
-    document.getElementById('setSizeL-btn').classList.remove('hidden');
-    document.getElementById('setSizeM-btn').classList.add('hidden');
-    document.getElementById('setSizeMax-btn').classList.add('hidden');
-    gameState.areaSize = 20;
-  });
-  const redactWallsDWButtonElement = document.getElementById('redactorWallsDW');
+  const redactWallsDWButtonElement = document.getElementById('redactorWalls-btn');
   redactWallsDWButtonElement.addEventListener('click', () => {
-    document.getElementById('redactorWallsDW').classList.add('hidden');
-    document.getElementById('redactorWallsTW').classList.remove('hidden');
-    gameState.isDeadWalls = false;
-  });
-  const redactWallsTWButtonElement = document.getElementById('redactorWallsTW');
-  redactWallsTWButtonElement.addEventListener('click', () => {
-    document.getElementById('redactorWallsDW').classList.remove('hidden');
-    document.getElementById('redactorWallsTW').classList.add('hidden');
-    gameState.isDeadWalls = true;
+    if (gameState.isDeadWalls){
+      gameState.isDeadWalls = false;
+      document.getElementById('redactorWalls-btn').innerText= 'Teleport'
+    }
+    else {
+      gameState.isDeadWalls = true;
+      document.getElementById('redactorWalls-btn').innerText= 'Dead'
+    }
   });
   const pageNWButtonElement = document.getElementById('pageNW-btn');
   pageNWButtonElement.addEventListener('click', () => {
@@ -242,37 +224,43 @@ function main() {
   });
   const interiorWallsButtonElement = document.getElementById('interiorWalls-btn');
   interiorWallsButtonElement.addEventListener('click', () => {
-    gameState.isInteriorWalls = false;
-    document.getElementById('interiorWalls-btn').classList.add('hidden');
-    document.getElementById('interiorWallsOff-btn').classList.remove('hidden');
+    if (gameState.isInteriorWalls){
+      gameState.isInteriorWalls = false;
+      document.getElementById('interiorWalls-btn').innerText = 'Null';
+    }else{
+      gameState.isInteriorWalls = true;
+      document.getElementById('interiorWalls-btn').innerText = 'Walls';
+    };
   });
-  const interiorWallsOffButtonElement = document.getElementById('interiorWallsOff-btn');
-  interiorWallsOffButtonElement.addEventListener('click', () => {
-    gameState.isInteriorWalls = true;
-    document.getElementById('interiorWalls-btn').classList.remove('hidden');
-    document.getElementById('interiorWallsOff-btn').classList.add('hidden');
+  const helpButtonElement = document.getElementById('help-btn');
+  helpButtonElement.addEventListener('click', ()=>{
+    pageManager.openPage('helpPage');
+  });
+  const returnHelpButtonElement = document.getElementById('returnHelp-btn');
+  returnHelpButtonElement.addEventListener('click', ()=>{
+    pageManager.openPage('mainMenu');
   });
 
   let myGame = {
     game() {
       // clear
       gameState.foods.clear();
-      gameState.area.clear();
-
-      // ???
+      gameState.snake.clear();
+      myGame.clearInteriorWalls();
+      // logic
       gameState.snake.foodTurn--;
       myGame.drawWallsCondition();
-      if (gameState.isInteriorWalls) myGame.drawInteriorWalls();
       myGame.action();
       myGame.eat();
       myGame.drawTailCondition();
       myGame.checkWinCondition();
       // render
       gameState.foods.render();
-      gameState.area.drawSnake();
+      gameState.snake.drawSnake();
+      myGame.drawInteriorWalls();
       // repeat
-      if (gameState.isGameActive) setTimeout(myGame.game, gameState.gameTimeToFrame);
       if (gameState.snake.foodTurn == 0) myGame.generateFood();
+      if (gameState.isGameActive) setTimeout(myGame.game, gameState.gameTimeToFrame);
     },
     drawWallsCondition() {
       if (gameState.isDeadWalls) {
@@ -326,20 +314,26 @@ function main() {
       else if (!gameState.isInteriorWalls) gameState.snake.maxTail = Math.pow(gameState.snake.maxTail, 2);
     },
     action() {
-      if (gameState.dir === "left") gameState.snake.head.x--;
-      else if (gameState.dir === "right") gameState.snake.head.x++;
-      else if (gameState.dir === "up") gameState.snake.head.y--;
-      else if (gameState.dir === "down") gameState.snake.head.y++;
+      if (gameState.dir === "left" && gameState.snake.head.x > 0) gameState.snake.head.x--;
+      else if (gameState.dir === "right" && gameState.snake.head.x < gameState.areaSize-1) gameState.snake.head.x++;
+      else if (gameState.dir === "up" && gameState.snake.head.y > 0) gameState.snake.head.y--;
+      else if (gameState.dir === "down" && gameState.snake.head.y < gameState.areaSize-1) gameState.snake.head.y++;
       document.getElementById("result").innerHTML = gameState.score;
     },
     eat() {
-      gameState.snake.tail.unshift({ x: gameState.snake.head.x, y: gameState.snake.head.y });
+      if (gameState.isGameActive){
+        gameState.snake.tail.unshift({ x: gameState.snake.head.x, y: gameState.snake.head.y });
 
-      const food = gameState.foods._points.find((foodPoint) => gameState.snake.checkCollisions(foodPoint));
-      if (food != null) {
-        gameState.score++;
-        gameState.foods.remove(food);
-      } else gameState.snake.tail.pop();
+        const food = gameState.foods._points.find((foodPoint) => gameState.snake.checkCollisions(foodPoint));
+        if (food != null) {
+          gameState.score++;
+          gameState.foods.remove(food);
+        } else {
+          gameState.lastTailX = gameState.snake.tail[gameState.snake.tail.length-1].x;
+          gameState.lastTailY = gameState.snake.tail[gameState.snake.tail.length-1].y;
+          gameState.snake.tail.pop();
+        }
+      }
     },
     generateFood() {
       while (true) {
@@ -366,12 +360,13 @@ function main() {
         }
         if (gameState.isInteriorWalls) {
           for (let i = 0; i < gameState.walls.length; i++) {
-            if (gameState.snake.tail[0].x === gameState.walls[i].x &&
-              gameState.snake.tail[0].y === gameState.walls[i].y) {
-              gameState.isGameActive = false;
-              myGame.statusLose();
+            if (gameState.snake.head.x === gameState.walls[i].x &&
+              gameState.snake.head.y === gameState.walls[i].y) {
+                gameState.isGameActive = false;
+                myGame.statusLose();
             }
           }
+          
         }
       }
     },
@@ -423,14 +418,15 @@ function main() {
       }
     },
     drawInteriorWalls() {
+      for (let i = 0; i < gameState.walls.length; i++) {
+        document.getElementById(`${gameState.walls[i].x} ${gameState.walls[i].y}`).classList.add('interWalls');
+      }
+    },
+    clearInteriorWalls(){
       for (let j = 0; j < gameState.areaSize; j++) {
         for (let i = 0; i < gameState.areaSize; i++) {
           document.getElementById(`${i} ${j}`).classList.remove('interWalls');
         }
-      }
-      for (let i = 0; i < gameState.walls.length; i++) {
-        console.log(`${gameState.walls[i].x} ${gameState.walls[i].y}`);
-        document.getElementById(`${gameState.walls[i].x} ${gameState.walls[i].y}`).classList.add('interWalls');
       }
     }
   }

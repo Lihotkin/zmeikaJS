@@ -15,7 +15,7 @@
             <ul class="clearlist0">
                 <li class="clearlist"><button id = "play-btn" class="stylebutton">Play</button></li>
                 <li class="clearlist"><button id = "setting-btn" class="stylebutton">Setting</button></li>
-                <li class="clearlist"><button id = "ext-btn" class="stylebutton">Exit</button></li>
+                <li class="clearlist"><button id = "help-btn" class="stylebutton">Help</button></li>
             </ul>   
         </div>
         <div id="gameMenu" class="hidden">
@@ -43,16 +43,10 @@
                     </div>
                     <div class="leftSetBlock">
                         <ul class="clearlist0">
-                            <li class="clearlist"><button id = "settingHard-btn" class="stylebutton hidden">Hard</button></li>
-                            <li class="clearlist"><button id = "settingMedium-btn" class="stylebutton hidden">Medium</button></li>
-                            <li class="clearlist"><button id = "settingLight-btn" class="stylebutton">Light</button></li>
-                            <li class="clearlist"><button id = 'setSizeL-btn' class="stylebutton">20*20</button></li>
-                            <li class="clearlist"><button id = 'setSizeM-btn' class="stylebutton hidden">30*30</button></li>
-                            <li class="clearlist"><button id = 'setSizeMax-btn' class="stylebutton hidden">40*40</button></li>
-                            <li class="clearlist"><button id = "redactorWallsDW" class="stylebutton setButtons">DeadWalls</button></li>
-                            <li class="clearlist"><button id = "redactorWallsTW" class="stylebutton hidden setButtons">TeleportWalls</button></li>
-                            <li class="clearlist"><button id ="interiorWalls-btn" class="stylebutton hidden">Walls</button></li>
-                            <li class="clearlist"><button id="interiorWallsOff-btn" class="stylebutton">null</button></li>
+                            <li class="clearlist"><button id = "settingSpeed-btn" class="stylebutton settstyle">Hard</button></li>
+                            <li class="clearlist"><button id = 'settingSize-btn' class="stylebutton settstyle">20*20</button></li>
+                            <li class="clearlist"><button id = "redactorWalls-btn" class="stylebutton setButtons settstyle">Dead</button></li>
+                            <li class="clearlist"><button id ="interiorWalls-btn" class="stylebutton settstyle">Null</button></li>
                         </ul>
                     </div>
                 </div>
@@ -62,9 +56,15 @@
     </div>
     <div id = "statusPage" class = "hidden">
         <h1 class="zagalovok"><div id = "gameStatus"></div></h1>
-        <ul class="clearlist0 buttonCenter">
-            <li class="clearlist"><button id ="pageNW-btn" class="stylebutton">New Game</button></li>
-            <li class="clearlist"><button id ="pageMenu-btn" class="stylebutton">MainMenu</button></li>
+            <button id ="pageNW-btn" class="stylebutton stutusStyle">New Game</button>
+            <button id ="pageMenu-btn" class="stylebutton stutusStyle">MainMenu</button>
+    </div>
+    <div id="helpPage" class="hidden">
+        <h1 class="zagalovok">Help</h1>
+        <p class="helpText">↑←↓→ or WASD - управление змейкой</p>
+        <p class="helpText">ESC - пауза во время игры</p>
+        <ul class="clearlist0">
+            <li class="clearlist"><button id="returnHelp-btn" class="stylebutton">MainMenu</button></li>
         </ul>
     </div>
 </body>

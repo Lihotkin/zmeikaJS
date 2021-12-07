@@ -57,7 +57,15 @@ body {
   margin-top: 15%;
   border: 1px solid green;
   height: 40%;
-  width: 37%;
+  width: 40%;
+  background-color: greenyellow;
+}
+#helpPage{
+  margin: 0px auto;
+  margin-top: 15%;
+  border: 1px solid green;
+  height: 40%;
+  width: 32%;
   background-color: greenyellow;
 }
 .set{
@@ -109,7 +117,7 @@ body {
 .setMiniHead{
   color:coral;
   display: inline;
-  font-size: 120%;
+  font-size: 110%;
   margin-left: 34%;
 }
 #score {
@@ -130,11 +138,11 @@ body {
   margin-left: -5%;
 }
 #play-btn {
-  margin-top: 50px;
+  margin-top: 20%;
 }
 
 #con-btn {
-  margin-top: 50px;
+  margin-top: 20%;
 }
 .setButtons{
   margin-left: 45%;
@@ -142,6 +150,11 @@ body {
 .zagalovok {
   text-align: center;
   color: darkgreen ;
+}
+
+.helpText {
+  font: 100% Arial;
+  text-align: center;
 }
 
 .clearlist  {
@@ -154,19 +167,30 @@ body {
   margin-right: 32%;
 }
 .buttonCenter{
-  margin-left: 25%;;
+  margin-left: 30%;;
+}
+#returnHelp-btn{
+  margin-left: 25%;
+  width: 100%;
 }
 .stylebutton {
-  font: 21px Arial;
-  width: 150px;
-  height: 30px;
+  font: 90% Arial;
+  width: 60%;
+  height: 35%;
   display: block;
-  margin: 5px;
-  margin-left: auto;
+  margin: 1%;
+  margin-left: 40%;
   margin-right: 5%;
   background-color: darkgreen;
-  color: white;
-  
+  color: white; 
+}
+.stutusStyle{
+  height: 18%;
+  margin-left: 20%;
+}
+.settstyle{
+  width: 100%;
+  margin-left: 0%;
 }
 .hidden {
   display: none;
