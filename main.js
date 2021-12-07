@@ -60,9 +60,7 @@ const gameState = {
           }
         }
       }
-  },
-  lastTailX: 0,
-  lastTailY: 0
+  }
 };
 
 document.addEventListener('readystatechange', () => {
@@ -323,16 +321,11 @@ function main() {
     eat() {
       if (gameState.isGameActive){
         gameState.snake.tail.unshift({ x: gameState.snake.head.x, y: gameState.snake.head.y });
-
         const food = gameState.foods._points.find((foodPoint) => gameState.snake.checkCollisions(foodPoint));
         if (food != null) {
           gameState.score++;
           gameState.foods.remove(food);
-        } else {
-          gameState.lastTailX = gameState.snake.tail[gameState.snake.tail.length-1].x;
-          gameState.lastTailY = gameState.snake.tail[gameState.snake.tail.length-1].y;
-          gameState.snake.tail.pop();
-        }
+        } else gameState.snake.tail.pop();
       }
     },
     generateFood() {
