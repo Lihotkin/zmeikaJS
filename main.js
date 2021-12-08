@@ -17,11 +17,8 @@ const gameState = {
     },
     render() {
       for (const point of this._points) {
-        if (gameState.isTimeFoods){
-          if (point.z === 0) document.getElementById(`${point.x} ${point.y}`).classList.add('food');
-          else if (point.z === 1) document.getElementById(`${point.x} ${point.y}`).classList.add('foodTime');
-        }
-        else document.getElementById(`${point.x} ${point.y}`).classList.add('food');
+        if (point.z === 0) document.getElementById(`${point.x} ${point.y}`).classList.add('food');
+        else if (point.z === 1) document.getElementById(`${point.x} ${point.y}`).classList.add('foodTime');
       }
     },
     clear() {
@@ -33,26 +30,15 @@ const gameState = {
     remove(point) {
       this._points = this._points.filter((foodPoint) => !(foodPoint.x === point.x && foodPoint.y === point.y));
     },
-    specialFoods(){
-      for (let i = 0; i < gameState.foods._points.length; i++){ 
-        if (gameState.snake.head.x === this._points[i].x &&
-          gameState.snake.head.y === this._points[i].y){
-            if (this._points[i].z === 0) gameState.score ++;
-            else if (this._points[i].z === 1) gameState.score +=5;
-          }
+    deleteSpecialFoods() {
+      for (const point of this._points) {
+        if (point.z === 1) {
+          if (point.t === 0) this.remove(point);
+          else point.t--;
+        }
       }
-    },
-    deleteSpecialFoods(){
-    for (let i = 0; i < gameState.foods._points.length; i++){
-    if (this._points[i].t == 0) {
-      document.getElementById(`${this._points[i].x} ${this._points[i].y}`).classList.remove('foodTime');
-      this._points = this._points.filter((foodPoint) => !(foodPoint.x === this._points[i].x && foodPoint.y === this._points[i].y));
-    } else if (this._points[i].z === 1) {
-      this._points[i].t --;
     }
-    }
-    }
-  },  
+  },
   snake: {
     tail: [],
     checkCollisions(point) {
@@ -75,16 +61,16 @@ const gameState = {
         }
       }
     },
-    drawSnake(){
+    drawSnake() {
       for (let i = 0; i < gameState.snake.tail.length; i++) {
-          if (i == 0) {
-            document.getElementById(`${gameState.snake.tail[i].x} ${gameState.snake.tail[i].y}`).classList.add('head');
-          }
-          else {
-            document.getElementById(`${gameState.snake.tail[i].x} ${gameState.snake.tail[i].y}`).classList.add('tail');
-          }
+        if (i == 0) {
+          document.getElementById(`${gameState.snake.tail[i].x} ${gameState.snake.tail[i].y}`).classList.add('head');
+        }
+        else {
+          document.getElementById(`${gameState.snake.tail[i].x} ${gameState.snake.tail[i].y}`).classList.add('tail');
         }
       }
+    }
   }
 };
 
@@ -190,15 +176,15 @@ function main() {
   });
   const hardButtonElement = document.getElementById('settingSpeed-btn');
   hardButtonElement.addEventListener('click', () => {
-    if (gameState.gameTimeToFrame === 300){
+    if (gameState.gameTimeToFrame === 300) {
       document.getElementById('settingSpeed-btn').innerText = 'Medium';
       gameState.gameTimeToFrame = 150;
-    }else if  (gameState.gameTimeToFrame === 150){
+    } else if (gameState.gameTimeToFrame === 150) {
       document.getElementById('settingSpeed-btn').innerText = 'Hard';
-    gameState.gameTimeToFrame = 100;
-    }else if (gameState.gameTimeToFrame === 100) {
-    document.getElementById('settingSpeed-btn').innerText = 'Light';
-    gameState.gameTimeToFrame = 300;
+      gameState.gameTimeToFrame = 100;
+    } else if (gameState.gameTimeToFrame === 100) {
+      document.getElementById('settingSpeed-btn').innerText = 'Light';
+      gameState.gameTimeToFrame = 300;
     }
   });
   const returnSetButtonElement = document.getElementById('returnSet-btn');
@@ -208,15 +194,15 @@ function main() {
   });
   const setSizeLButtonElement = document.getElementById('settingSize-btn');
   setSizeLButtonElement.addEventListener('click', () => {
-    if (gameState.areaSize === 20){
+    if (gameState.areaSize === 20) {
       areaManager.newSize('areaMedium');
       gameState.areaSize = 30;
       document.getElementById('settingSize-btn').innerText = '30*30';
-    }else if (gameState.areaSize === 30){
+    } else if (gameState.areaSize === 30) {
       areaManager.newSize('areaMax');
       gameState.areaSize = 40;
       document.getElementById('settingSize-btn').innerText = '40*40';
-    }else if (gameState.areaSize === 40){
+    } else if (gameState.areaSize === 40) {
       areaManager.newSize('areaLight');
       gameState.areaSize = 20;
       document.getElementById('settingSize-btn').innerText = '20*20';
@@ -224,13 +210,13 @@ function main() {
   });
   const redactWallsDWButtonElement = document.getElementById('redactorWalls-btn');
   redactWallsDWButtonElement.addEventListener('click', () => {
-    if (gameState.isDeadWalls){
+    if (gameState.isDeadWalls) {
       gameState.isDeadWalls = false;
-      document.getElementById('redactorWalls-btn').innerText= 'Teleport'
+      document.getElementById('redactorWalls-btn').innerText = 'Teleport'
     }
     else {
       gameState.isDeadWalls = true;
-      document.getElementById('redactorWalls-btn').innerText= 'Dead'
+      document.getElementById('redactorWalls-btn').innerText = 'Dead'
     }
   });
   const pageNWButtonElement = document.getElementById('pageNW-btn');
@@ -249,28 +235,28 @@ function main() {
   });
   const interiorWallsButtonElement = document.getElementById('interiorWalls-btn');
   interiorWallsButtonElement.addEventListener('click', () => {
-    if (gameState.isInteriorWalls){
+    if (gameState.isInteriorWalls) {
       gameState.isInteriorWalls = false;
       document.getElementById('interiorWalls-btn').innerText = 'Null';
-    }else{
+    } else {
       gameState.isInteriorWalls = true;
       document.getElementById('interiorWalls-btn').innerText = 'Walls';
     };
   });
   const helpButtonElement = document.getElementById('help-btn');
-  helpButtonElement.addEventListener('click', ()=>{
+  helpButtonElement.addEventListener('click', () => {
     pageManager.openPage('helpPage');
   });
   const returnHelpButtonElement = document.getElementById('returnHelp-btn');
-  returnHelpButtonElement.addEventListener('click', ()=>{
+  returnHelpButtonElement.addEventListener('click', () => {
     pageManager.openPage('mainMenu');
   });
   const timeFoodButtonElement = document.getElementById('timeFood-btn');
   timeFoodButtonElement.addEventListener('click', () => {
-    if (gameState.isTimeFoods){
+    if (gameState.isTimeFoods) {
       gameState.isTimeFoods = false;
       document.getElementById('timeFood-btn').innerText = 'OFF'
-    }else{
+    } else {
       gameState.isTimeFoods = true;
       document.getElementById('timeFood-btn').innerText = 'ON'
     }
@@ -282,6 +268,7 @@ function main() {
       gameState.foods.clear();
       gameState.snake.clear();
       myGame.clearInteriorWalls();
+      if (gameState.isTimeFoods) gameState.foods.deleteSpecialFoods();
       // logic
       gameState.snake.foodTurn--;
       myGame.drawWallsCondition();
@@ -296,7 +283,6 @@ function main() {
       // repeat
       if (gameState.snake.foodTurn == 0) myGame.generateFood();
       if (gameState.isGameActive) setTimeout(myGame.game, gameState.gameTimeToFrame);
-      if (gameState.isTimeFoods)gameState.foods.deleteSpecialFoods();
     },
     drawWallsCondition() {
       if (gameState.isDeadWalls) {
@@ -304,8 +290,8 @@ function main() {
           (gameState.snake.head.x === gameState.areaSize - 1 && gameState.dir === "right") ||
           (gameState.snake.head.y === gameState.areaSize - 1 && gameState.dir === "down") ||
           (gameState.snake.head.y === 0 && gameState.dir === "up")) {
-            gameState.isGameActive = false;
-            myGame.statusLose();
+          gameState.isGameActive = false;
+          myGame.statusLose();
         }
       }
       else if (!gameState.isDeadWalls) {
@@ -352,29 +338,32 @@ function main() {
     },
     action() {
       if (gameState.dir === "left" && gameState.snake.head.x > 0) gameState.snake.head.x--;
-      else if (gameState.dir === "right" && gameState.snake.head.x < gameState.areaSize-1) gameState.snake.head.x++;
+      else if (gameState.dir === "right" && gameState.snake.head.x < gameState.areaSize - 1) gameState.snake.head.x++;
       else if (gameState.dir === "up" && gameState.snake.head.y > 0) gameState.snake.head.y--;
-      else if (gameState.dir === "down" && gameState.snake.head.y < gameState.areaSize-1) gameState.snake.head.y++;
+      else if (gameState.dir === "down" && gameState.snake.head.y < gameState.areaSize - 1) gameState.snake.head.y++;
       document.getElementById("result").innerHTML = gameState.score;
     },
     eat() {
-        gameState.snake.tail.unshift({ x: gameState.snake.head.x, y: gameState.snake.head.y });
-        const food = gameState.foods._points.find((foodPoint) => gameState.snake.checkCollisions(foodPoint));
-        if (food != null) {
-          if (gameState.isTimeFoods) gameState.foods.specialFoods(food);
-          else gameState.score++;
-          gameState.foods.remove(food);
-        } else gameState.snake.tail.pop();
+      gameState.snake.tail.unshift({ x: gameState.snake.head.x, y: gameState.snake.head.y });
+      const food = gameState.foods._points.find((foodPoint) => gameState.snake.checkCollisions(foodPoint));
+      if (food != null) {
+        if (food.z === 1) gameState.score += 5;
+        else gameState.score += 1;
+        gameState.foods.remove(food);
+      } else gameState.snake.tail.pop();
     },
     generateFood() {
       while (true) {
         const foodPoint = {
           x: Math.floor(Math.random() * gameState.areaSize + 0),
           y: Math.floor(Math.random() * gameState.areaSize + 0),
-          z: Math.floor(Math.random() * 2 + 0),
-          t: Math.floor(Math.random() * 18 + 10)
         };
         if (!gameState.snake.checkCollisions(foodPoint)) {
+          if (gameState.isTimeFoods) {
+            foodPoint.z = Math.floor(Math.random() * 2 + 0), // Тип еды 0 - стандартная, 1 - пропадает через время
+            foodPoint.t = Math.floor(Math.random() * 18 + 10) // Время через которое пропадет еда
+          } else foodPoint.z = 0;
+          
           gameState.foods.add(foodPoint)
           break
         };
@@ -395,11 +384,11 @@ function main() {
           for (let i = 0; i < gameState.walls.length; i++) {
             if (gameState.snake.head.x === gameState.walls[i].x &&
               gameState.snake.head.y === gameState.walls[i].y) {
-                gameState.isGameActive = false;
-                myGame.statusLose();
+              gameState.isGameActive = false;
+              myGame.statusLose();
             }
           }
-          
+
         }
       }
     },
@@ -428,7 +417,7 @@ function main() {
       gameState.snake.tail = [];
     },
     interiorWallsGame() {
-      let nWalls = Math.floor(Math.random() * gameState.areaSize/4 + 5);
+      let nWalls = Math.floor(Math.random() * gameState.areaSize / 4 + 5);
       for (let i = 0; i < nWalls; i++) {
         let xWalls = Math.floor(Math.random() * gameState.areaSize + 0);
         let yWalls = Math.floor(Math.random() * gameState.areaSize + 0);
@@ -438,12 +427,12 @@ function main() {
         if (yWalls + lengthWalls > gameState.areaSize) yWalls = gameState.areaSize - lengthWalls;
         for (let i = 0; i < lengthWalls; i++) {
           if ((xWalls != gameState.areaSize / 2 && yWalls != gameState.areaSize / 2) &&
-          ( xWalls != gameState.areaSize / 2 + 1  && yWalls != gameState.areaSize / 2 ) &&
-          ( xWalls != gameState.areaSize / 2 - 1  && yWalls != gameState.areaSize / 2 ) &&
-          ( xWalls != gameState.areaSize / 2 + 1  && yWalls != gameState.areaSize / 2 ) &&
-          ( xWalls != gameState.areaSize / 2 -1  && yWalls != gameState.areaSize / 2 + 1) &&
-          ( xWalls != gameState.areaSize / 2 -1  && yWalls != gameState.areaSize / 2 ) &&
-          ( xWalls != gameState.areaSize / 2 -1  && yWalls != gameState.areaSize / 2 - 1) ){
+            (xWalls != gameState.areaSize / 2 + 1 && yWalls != gameState.areaSize / 2) &&
+            (xWalls != gameState.areaSize / 2 - 1 && yWalls != gameState.areaSize / 2) &&
+            (xWalls != gameState.areaSize / 2 + 1 && yWalls != gameState.areaSize / 2) &&
+            (xWalls != gameState.areaSize / 2 - 1 && yWalls != gameState.areaSize / 2 + 1) &&
+            (xWalls != gameState.areaSize / 2 - 1 && yWalls != gameState.areaSize / 2) &&
+            (xWalls != gameState.areaSize / 2 - 1 && yWalls != gameState.areaSize / 2 - 1)) {
             if (randomizeWalls === 1 || randomizeWalls === 2) gameState.walls.unshift({ x: xWalls + i, y: yWalls });
             if (randomizeWalls === 0) gameState.walls.unshift({ x: yWalls, y: xWalls + i });
           }
@@ -455,14 +444,14 @@ function main() {
         document.getElementById(`${gameState.walls[i].x} ${gameState.walls[i].y}`).classList.add('interWalls');
       }
     },
-    clearInteriorWalls(){
+    clearInteriorWalls() {
       for (let j = 0; j < gameState.areaSize; j++) {
         for (let i = 0; i < gameState.areaSize; i++) {
           document.getElementById(`${i} ${j}`).classList.remove('interWalls');
         }
       }
     }
-}
+  }
   const myMenus = {
     cleanGameZone() {
       const myNode = document.getElementById("areaGame");

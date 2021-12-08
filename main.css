@@ -197,9 +197,11 @@ body {
 }
 .food {
   background-color: brown;
+  border-radius: 50%;
 }
 .foodTime {
   background-color: yellow;
+  border-radius: 50%;
 }
 .head {
   background-color: green;
