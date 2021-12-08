@@ -118,7 +118,7 @@ body {
   color:coral;
   display: inline;
   font-size: 110%;
-  margin-left: 34%;
+  margin-left: 24%;
 }
 #score {
   display: inline;
@@ -197,6 +197,9 @@ body {
 }
 .food {
   background-color: brown;
+}
+.foodTime {
+  background-color: yellow;
 }
 .head {
   background-color: green;
