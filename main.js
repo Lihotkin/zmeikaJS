@@ -11,8 +11,9 @@ const gameState = {
   dir: "stop",
   lastDir: "stop",
   isGameResult: "You Lose",
-  walls: [],
+  walls: {},
   foods: {
+    nFoods: 4,
     _points: [],
     add(point) {
       this._points.push(point);
@@ -242,10 +243,10 @@ function main() {
       gameState.isInteriorWalls = false;
       gameState.isMoveWalls = false;
       document.getElementById('interiorWalls-btn').innerText = 'Null';
-    } else if (!gameState.isInteriorWalls && !gameState.isMoveWalls){
+    } else if (!gameState.isInteriorWalls && !gameState.isMoveWalls) {
       gameState.isInteriorWalls = true;
       document.getElementById('interiorWalls-btn').innerText = 'Static';
-    }else {
+    } else {
       gameState.isMoveWalls = true;
       document.getElementById('interiorWalls-btn').innerText = 'Move';
     }
@@ -266,6 +267,16 @@ function main() {
     } else {
       gameState.isTimeFoods = true;
       document.getElementById('timeFood-btn').innerText = 'ON'
+    }
+  });
+  const nFoodButtonElement = document.getElementById('nFoods-btn');
+  nFoodButtonElement.addEventListener('click', () => {
+    if (gameState.foods.nFoods > 0){
+      document.getElementById('nFoods-btn').innerText = 'One';
+      gameState.foods.nFoods = 0;
+    }else{
+      document.getElementById('nFoods-btn').innerText = 'Many';
+      gameState.foods.nFoods = 4;
     }
   });
 
@@ -289,7 +300,7 @@ function main() {
       gameState.snake.drawSnake();
       myGame.drawInteriorWalls();
       // repeat
-      if (gameState.snake.foodTurn <= 0 && gameState.foods._points.length <= 5) myGame.generateFood();
+      if (gameState.snake.foodTurn <= 0 && gameState.foods._points.length <= gameState.foods.nFoods) myGame.generateFood();
       if (gameState.isGameActive) setTimeout(myGame.game, gameState.gameTimeToFrame);
     },
     drawWallsCondition() {
@@ -342,7 +353,7 @@ function main() {
       else if (!gameState.isInteriorWalls) gameState.snake.maxTail = Math.pow(gameState.snake.maxTail, 2);
     },
     action() {
-      if (gameState.dir === "left" && gameState.snake.head.x > 0 ) gameState.snake.head.x--;
+      if (gameState.dir === "left" && gameState.snake.head.x > 0) gameState.snake.head.x--;
       else if (gameState.dir === "right" && gameState.snake.head.x < gameState.areaSize - 1) gameState.snake.head.x++;
       else if (gameState.dir === "up" && gameState.snake.head.y > 0) gameState.snake.head.y--;
       else if (gameState.dir === "down" && gameState.snake.head.y < gameState.areaSize - 1) gameState.snake.head.y++;
@@ -366,7 +377,7 @@ function main() {
           x: Math.floor(Math.random() * gameState.areaSize + 0),
           y: Math.floor(Math.random() * gameState.areaSize + 0),
         };
-        
+
         if (!gameState.snake.checkCollisions(foodPoint)) {
           if (gameState.isTimeFoods) {
             foodPoint.z = Math.floor(Math.random() * 2 + 0), // Тип еды 0 - стандартная, 1 - пропадает через время
@@ -434,7 +445,7 @@ function main() {
       for (let i = 0; i < nWalls; i++) {
         let xWalls = Math.floor(Math.random() * gameState.areaSize + 0);  // координаты
         let yWalls = Math.floor(Math.random() * gameState.areaSize + 0); // x and y
-        if (gameState.isMoveWalls){
+        if (gameState.isMoveWalls) {
           if (Math.random() > 0.5) {
             dirWallX = Math.floor(Math.random() * 2 - 1); //dx
             dirWallY = 0;
@@ -449,7 +460,7 @@ function main() {
         id++;
         if (xWalls + lengthWalls > gameState.areaSize) xWalls = gameState.areaSize - lengthWalls;
         if (yWalls + lengthWalls > gameState.areaSize) yWalls = gameState.areaSize - lengthWalls;
-        const wall = { id, points: [], dx: dirWallX, dy: dirWallY, speed: speedWall, maxSpeed:speedWall }; //Создаем массив
+        const wall = { id, points: [], dx: dirWallX, dy: dirWallY, speed: speedWall, maxSpeed: speedWall }; //Создаем массив
         gameState.walls.push(wall);
         for (let i = 0; i < lengthWalls; i++) {
           if ((xWalls != gameState.areaSize / 2 && yWalls != gameState.areaSize / 2) &&
@@ -466,12 +477,15 @@ function main() {
       }
     },
     wallMovement() {
-      console.log(gameState.walls);
       if (gameState.dir != "stop" && gameState.isMoveWalls) {
         for (const wall of gameState.walls) {
-          if (wall.points.some((point) => point.x === 0 || point.y === 0 || point.y === gameState.areaSize || point.x === gameState.areaSize)) {
-            wall.dx = Math.abs(wall.dx);
-            wall.dy = Math.abs(wall.dy);
+          if (wall.points.some((point) => point.x === 0 || point.y === 0 || point.y === gameState.areaSize - 1 || point.x === gameState.areaSize - 1 )) {
+            if (wall.dx < 0) wall.dx = Math.abs(wall.dx);
+            else if (wall.dx > 0) wall.dx = -Math.abs(wall.dx);
+            else wall.dx = 0;
+            if (wall.dy < 0) wall.dy = Math.abs(wall.dy);
+            else if (wall.dy > 0) wall.dy = -Math.abs(wall.dy);
+            else wall.dy = 0;
           }
           if (wall.speed <= 0) {
             for (const point of wall.points) {
@@ -482,6 +496,7 @@ function main() {
           }
           wall.speed--;
         }
+
       }
     },
     drawInteriorWalls() {
