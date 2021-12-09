@@ -3,11 +3,13 @@ const gameState = {
   isDeadWalls: true,
   isTimeFoods: true,
   isInteriorWalls: false,
+  isMoveWalls: false,
   gameTimeToFrame: 100,
   areaSize: 20,
   score: 0,
   bestScore: 0,
   dir: "stop",
+  lastDir: "stop",
   isGameResult: "You Lose",
   walls: [],
   foods: {
@@ -62,6 +64,7 @@ const gameState = {
       }
     },
     drawSnake() {
+      gameState.lastDir = gameState.dir;
       for (let i = 0; i < gameState.snake.tail.length; i++) {
         if (i == 0) {
           document.getElementById(`${gameState.snake.tail[i].x} ${gameState.snake.tail[i].y}`).classList.add('head');
@@ -126,13 +129,13 @@ function main() {
   }
   document.addEventListener("keydown", (e) => {
     if ((e.code === 'KeyA' || e.keyCode == 37) &&
-      (gameState.dir != "right" || gameState.snake.tail.length === 1)) gameState.dir = "left";
+      (gameState.dir != "right" && gameState.lastDir != "right" || gameState.snake.tail.length === 1)) gameState.dir = "left";
     else if ((e.code === 'KeyW' || e.keyCode == 38) &&
-      (gameState.dir != "down" || gameState.snake.tail.length === 1)) gameState.dir = "up";
+      (gameState.dir != "down" && gameState.lastDir != "down" || gameState.snake.tail.length === 1)) gameState.dir = "up";
     else if ((e.code === 'KeyD' || e.keyCode == 39) &&
-      (gameState.dir != "left" || gameState.snake.tail.length === 1)) gameState.dir = "right";
+      (gameState.dir != "left" && gameState.lastDir != "left" || gameState.snake.tail.length === 1)) gameState.dir = "right";
     else if ((e.code === 'KeyS' || e.keyCode == 40) &&
-      (gameState.dir != "up" || gameState.snake.tail.length === 1)) gameState.dir = "down";
+      (gameState.dir != "up" && gameState.lastDir != "up" || gameState.snake.tail.length === 1)) gameState.dir = "down";
     else if (e.keyCode === 27 && gameState.isGameActive) {
       gameState.isPause = true;
       pageManager.openPages(['gameMenu', 'gamePage']);
@@ -235,13 +238,17 @@ function main() {
   });
   const interiorWallsButtonElement = document.getElementById('interiorWalls-btn');
   interiorWallsButtonElement.addEventListener('click', () => {
-    if (gameState.isInteriorWalls) {
+    if (gameState.isInteriorWalls && gameState.isMoveWalls) {
       gameState.isInteriorWalls = false;
+      gameState.isMoveWalls = false;
       document.getElementById('interiorWalls-btn').innerText = 'Null';
-    } else {
+    } else if (!gameState.isInteriorWalls && !gameState.isMoveWalls){
       gameState.isInteriorWalls = true;
-      document.getElementById('interiorWalls-btn').innerText = 'Walls';
-    };
+      document.getElementById('interiorWalls-btn').innerText = 'Static';
+    }else {
+      gameState.isMoveWalls = true;
+      document.getElementById('interiorWalls-btn').innerText = 'Move';
+    }
   });
   const helpButtonElement = document.getElementById('help-btn');
   helpButtonElement.addEventListener('click', () => {
@@ -272,6 +279,7 @@ function main() {
       // logic
       gameState.snake.foodTurn--;
       myGame.drawWallsCondition();
+      myGame.wallMovement()
       myGame.action();
       myGame.eat();
       myGame.drawTailCondition();
@@ -281,7 +289,7 @@ function main() {
       gameState.snake.drawSnake();
       myGame.drawInteriorWalls();
       // repeat
-      if (gameState.snake.foodTurn == 0) myGame.generateFood();
+      if (gameState.snake.foodTurn <= 0 && gameState.foods._points.length <= 5) myGame.generateFood();
       if (gameState.isGameActive) setTimeout(myGame.game, gameState.gameTimeToFrame);
     },
     drawWallsCondition() {
@@ -289,10 +297,7 @@ function main() {
         if ((gameState.snake.head.x === 0 && gameState.dir === "left") ||
           (gameState.snake.head.x === gameState.areaSize - 1 && gameState.dir === "right") ||
           (gameState.snake.head.y === gameState.areaSize - 1 && gameState.dir === "down") ||
-          (gameState.snake.head.y === 0 && gameState.dir === "up")) {
-          gameState.isGameActive = false;
-          myGame.statusLose();
-        }
+          (gameState.snake.head.y === 0 && gameState.dir === "up")) myGame.statusLose();
       }
       else if (!gameState.isDeadWalls) {
         if (gameState.snake.tail[0].x === 0 && gameState.dir === "left") {
@@ -337,7 +342,7 @@ function main() {
       else if (!gameState.isInteriorWalls) gameState.snake.maxTail = Math.pow(gameState.snake.maxTail, 2);
     },
     action() {
-      if (gameState.dir === "left" && gameState.snake.head.x > 0) gameState.snake.head.x--;
+      if (gameState.dir === "left" && gameState.snake.head.x > 0 ) gameState.snake.head.x--;
       else if (gameState.dir === "right" && gameState.snake.head.x < gameState.areaSize - 1) gameState.snake.head.x++;
       else if (gameState.dir === "up" && gameState.snake.head.y > 0) gameState.snake.head.y--;
       else if (gameState.dir === "down" && gameState.snake.head.y < gameState.areaSize - 1) gameState.snake.head.y++;
@@ -347,8 +352,11 @@ function main() {
       gameState.snake.tail.unshift({ x: gameState.snake.head.x, y: gameState.snake.head.y });
       const food = gameState.foods._points.find((foodPoint) => gameState.snake.checkCollisions(foodPoint));
       if (food != null) {
-        if (food.z === 1) gameState.score += 5;
-        else gameState.score += 1;
+        let rankUp = 1;
+        if (gameState.isInteriorWalls && gameState.isMoveWalls) rankUp = 3;
+        else if (!gameState.isInteriorWalls && gameState.isMoveWalls || gameState.isInteriorWalls && !gameState.isMoveWalls) rankUp = 2;
+        if (food.z === 1) gameState.score += 5 * rankUp;
+        else gameState.score += 1 * rankUp;
         gameState.foods.remove(food);
       } else gameState.snake.tail.pop();
     },
@@ -358,12 +366,13 @@ function main() {
           x: Math.floor(Math.random() * gameState.areaSize + 0),
           y: Math.floor(Math.random() * gameState.areaSize + 0),
         };
+        
         if (!gameState.snake.checkCollisions(foodPoint)) {
           if (gameState.isTimeFoods) {
             foodPoint.z = Math.floor(Math.random() * 2 + 0), // Тип еды 0 - стандартная, 1 - пропадает через время
-            foodPoint.t = Math.floor(Math.random() * 18 + 10) // Время через которое пропадет еда
+              foodPoint.t = Math.floor(Math.random() * 18 + 10) // Время через которое пропадет еда
           } else foodPoint.z = 0;
-          
+
           gameState.foods.add(foodPoint)
           break
         };
@@ -375,20 +384,20 @@ function main() {
         gameState.snake.tail[0].y >= 0 && gameState.snake.tail[0].y < gameState.areaSize) {
         for (let i = 1; i < gameState.snake.tail.length; i++) {
           if (gameState.snake.tail[0].x == gameState.snake.tail[i].x &&
-            gameState.snake.tail[0].y == gameState.snake.tail[i].y) {
-            gameState.isGameActive = false;
-            myGame.statusLose();
-          }
+            gameState.snake.tail[0].y == gameState.snake.tail[i].y) myGame.statusLose();
         }
         if (gameState.isInteriorWalls) {
           for (let i = 0; i < gameState.walls.length; i++) {
             if (gameState.snake.head.x === gameState.walls[i].x &&
-              gameState.snake.head.y === gameState.walls[i].y) {
-              gameState.isGameActive = false;
-              myGame.statusLose();
+              gameState.snake.head.y === gameState.walls[i].y) myGame.statusLose();
+          }
+          for (const wall of gameState.walls) {
+            for (const point of wall.points) {
+              for (const tail of gameState.snake.tail) {
+                if (point.x === tail.x && point.y === tail.y) myGame.statusLose();
+              }
             }
           }
-
         }
       }
     },
@@ -404,6 +413,7 @@ function main() {
       }
     },
     statusLose() {
+      gameState.isGameActive = false;
       if (gameState.bestScore < gameState.score) gameState.bestScore = gameState.score;
       document.getElementById("result").innerHTML = gameState.score;
       document.getElementById("result2").innerHTML = gameState.bestScore;
@@ -417,14 +427,30 @@ function main() {
       gameState.snake.tail = [];
     },
     interiorWallsGame() {
-      let nWalls = Math.floor(Math.random() * gameState.areaSize / 4 + 5);
+      let nWalls = Math.floor(Math.random() * gameState.areaSize / 4 + 3); // количество стен
+      let id = -1;
+      let dirWallX = 0;
+      let dirWallY = 0;
       for (let i = 0; i < nWalls; i++) {
-        let xWalls = Math.floor(Math.random() * gameState.areaSize + 0);
-        let yWalls = Math.floor(Math.random() * gameState.areaSize + 0);
-        let randomizeWalls = Math.floor(Math.random() * 2 + 0);
-        let lengthWalls = Math.floor(Math.random() * 2 + 3);
+        let xWalls = Math.floor(Math.random() * gameState.areaSize + 0);  // координаты
+        let yWalls = Math.floor(Math.random() * gameState.areaSize + 0); // x and y
+        if (gameState.isMoveWalls){
+          if (Math.random() > 0.5) {
+            dirWallX = Math.floor(Math.random() * 2 - 1); //dx
+            dirWallY = 0;
+          } else {
+            dirWallX = 0;
+            dirWallY = Math.floor(Math.random() * 2 - 1); //dy
+          }
+        }
+        let randomizeWalls = Math.floor(Math.random() * 2 + 0);  // направление стен  |-
+        let speedWall = Math.floor(Math.random() * 8 + 3) // скорость стен
+        let lengthWalls = Math.floor(Math.random() * 2 + 3); //длина стен
+        id++;
         if (xWalls + lengthWalls > gameState.areaSize) xWalls = gameState.areaSize - lengthWalls;
         if (yWalls + lengthWalls > gameState.areaSize) yWalls = gameState.areaSize - lengthWalls;
+        const wall = { id, points: [], dx: dirWallX, dy: dirWallY, speed: speedWall, maxSpeed:speedWall }; //Создаем массив
+        gameState.walls.push(wall);
         for (let i = 0; i < lengthWalls; i++) {
           if ((xWalls != gameState.areaSize / 2 && yWalls != gameState.areaSize / 2) &&
             (xWalls != gameState.areaSize / 2 + 1 && yWalls != gameState.areaSize / 2) &&
@@ -433,15 +459,36 @@ function main() {
             (xWalls != gameState.areaSize / 2 - 1 && yWalls != gameState.areaSize / 2 + 1) &&
             (xWalls != gameState.areaSize / 2 - 1 && yWalls != gameState.areaSize / 2) &&
             (xWalls != gameState.areaSize / 2 - 1 && yWalls != gameState.areaSize / 2 - 1)) {
-            if (randomizeWalls === 1 || randomizeWalls === 2) gameState.walls.unshift({ x: xWalls + i, y: yWalls });
-            if (randomizeWalls === 0) gameState.walls.unshift({ x: yWalls, y: xWalls + i });
+            if (randomizeWalls === 1) wall.points.push({ x: xWalls + i, y: yWalls });
+            else wall.points.push({ x: yWalls, y: xWalls + i });
           }
         }
       }
     },
+    wallMovement() {
+      console.log(gameState.walls);
+      if (gameState.dir != "stop" && gameState.isMoveWalls) {
+        for (const wall of gameState.walls) {
+          if (wall.points.some((point) => point.x === 0 || point.y === 0 || point.y === gameState.areaSize || point.x === gameState.areaSize)) {
+            wall.dx = Math.abs(wall.dx);
+            wall.dy = Math.abs(wall.dy);
+          }
+          if (wall.speed <= 0) {
+            for (const point of wall.points) {
+              point.x += wall.dx;
+              point.y += wall.dy;
+            }
+            wall.speed = wall.maxSpeed;
+          }
+          wall.speed--;
+        }
+      }
+    },
     drawInteriorWalls() {
-      for (let i = 0; i < gameState.walls.length; i++) {
-        document.getElementById(`${gameState.walls[i].x} ${gameState.walls[i].y}`).classList.add('interWalls');
+      for (const wall of gameState.walls) {
+        for (const point of wall.points) {
+          document.getElementById(`${point.x} ${point.y}`).classList.add('interWalls');
+        }
       }
     },
     clearInteriorWalls() {
@@ -458,5 +505,4 @@ function main() {
       myNode.innerHTML = '';
     }
   }
-
 }
