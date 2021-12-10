@@ -477,16 +477,13 @@ function main() {
       }
     },
     wallMovement() {
+      console.log(' nach   ',gameState.walls);
       if (gameState.dir != "stop" && gameState.isMoveWalls) {
         for (const wall of gameState.walls) {
-          if (wall.points.some((point) => point.x === 0 || point.y === 0 || point.y === gameState.areaSize - 1 || point.x === gameState.areaSize - 1 )) {
-            if (wall.dx < 0) wall.dx = Math.abs(wall.dx);
-            else if (wall.dx > 0) wall.dx = -Math.abs(wall.dx);
-            else wall.dx = 0;
-            if (wall.dy < 0) wall.dy = Math.abs(wall.dy);
-            else if (wall.dy > 0) wall.dy = -Math.abs(wall.dy);
-            else wall.dy = 0;
-          }
+          if (wall.points.some((point) => point.x === 0)) wall.dx = wall.dx === 0 ? 0 : 1;
+          if (wall.points.some((point) => point.y === 0)) wall.dy = wall.dy === 0 ? 0 : 1;
+          if (wall.points.some((point) => point.x === gameState.areaSize - 1)) wall.dx = wall.dx === 0 ? 0 : -1;
+          if (wall.points.some((point) => point.y === gameState.areaSize - 1)) wall.dy = wall.dy === 0 ? 0 : -1;
           if (wall.speed <= 0) {
             for (const point of wall.points) {
               point.x += wall.dx;
@@ -496,7 +493,6 @@ function main() {
           }
           wall.speed--;
         }
-
       }
     },
     drawInteriorWalls() {
