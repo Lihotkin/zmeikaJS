@@ -8,6 +8,7 @@ body {
   /* margin: 5px; */
   font: 21px Arial italic;
   background-image: url("image/fon-game.jpeg");
+  background-size: 100% 100%;
 }
 
 .index-page {
@@ -18,18 +19,20 @@ body {
 }
 
 #mainMenu {
+  padding-top: 1%;
   margin: 0px auto;
   margin-top: 15%;
-  border: 1px solid green;
   height: 30%;
   width: 40%;
-  background-color: greenyellow;
+  background: url("image/fon-menu.jpeg");
+  background-size: 100% 100%;
 }
 #gameMenu{
-  border: 1px solid green;
+  padding-top: 5%;
   height: 30%;
   width: 40%;
-  background-color: greenyellow;
+  background-image: url("image/fon-menu.jpeg");
+  background-size: 100% 100%;
   position: absolute;
   left: 50%;
   top: 30%;
@@ -43,10 +46,10 @@ body {
   background-color: white;
 }
 #statusPage{
-  border: 1px solid green;
   height: 20%;
   width: 30%;
-  background-color: greenyellow;
+  background-image: url("image/fon-menu.jpeg");
+  background-size: 100% 100%;
   position: absolute;
   left: 50%;
   top: 30%;
@@ -55,18 +58,19 @@ body {
 #settingPage{
   margin: 0px auto;
   margin-top: 15%;
-  border: 1px solid green;
   height: 40%;
   width: 40%;
-  background-color: greenyellow;
+  background-image: url("image/fon-menu.jpeg");
+  background-size: 100% 100%;
 }
 #helpPage{
+  padding-top: 3%;
   margin: 0px auto;
   margin-top: 15%;
-  border: 1px solid green;
-  height: 40%;
+  height: 34%;
   width: 32%;
-  background-color: greenyellow;
+  background-image: url("image/fon-menu.jpeg");
+  background-size: 100% 100%;
 }
 .set{
   display: table;
@@ -138,7 +142,7 @@ body {
   margin-left: -5%;
 }
 #play-btn {
-  margin-top: 20%;
+  margin-top: 30%;
 }
 
 #con-btn {
@@ -150,8 +154,12 @@ body {
 .zagalovok {
   text-align: center;
   color: darkgreen ;
+  display: block;
+  height: 3%;
 }
-
+.fixHelpZag{
+  height: 10%;
+}
 .helpText {
   font: 100% Arial;
   text-align: center;
@@ -178,6 +186,7 @@ body {
   width: 60%;
   height: 35%;
   display: block;
+  position: relative;
   margin: 1%;
   margin-left: 40%;
   margin-right: 5%;
@@ -186,7 +195,11 @@ body {
 }
 .stutusStyle{
   height: 18%;
-  margin-left: 20%;
+  width: 50%;
+  margin-left: 25%;
+}
+.otsZag{
+  margin-top: 14%;
 }
 .settstyle{
   width: 100%;
@@ -210,5 +223,6 @@ body {
   background-color: lawngreen;
 }
 .interWalls{
-  background-color: darkorange;
+  background-image: url("image/wall-texture.png");
+  background-size: 100% 100%;
 }

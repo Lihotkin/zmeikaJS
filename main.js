@@ -271,10 +271,10 @@ function main() {
   });
   const nFoodButtonElement = document.getElementById('nFoods-btn');
   nFoodButtonElement.addEventListener('click', () => {
-    if (gameState.foods.nFoods > 0){
+    if (gameState.foods.nFoods > 0) {
       document.getElementById('nFoods-btn').innerText = 'One';
       gameState.foods.nFoods = 0;
-    }else{
+    } else {
       document.getElementById('nFoods-btn').innerText = 'Many';
       gameState.foods.nFoods = 4;
     }
@@ -378,7 +378,7 @@ function main() {
           y: Math.floor(Math.random() * gameState.areaSize + 0),
         };
 
-        if (!gameState.snake.checkCollisions(foodPoint)) {
+        if (!gameState.snake.checkCollisions(foodPoint) && !myGame.checkWall(foodPoint)) {
           if (gameState.isTimeFoods) {
             foodPoint.z = Math.floor(Math.random() * 2 + 0), // Тип еды 0 - стандартная, 1 - пропадает через время
               foodPoint.t = Math.floor(Math.random() * 18 + 10) // Время через которое пропадет еда
@@ -507,6 +507,14 @@ function main() {
           document.getElementById(`${i} ${j}`).classList.remove('interWalls');
         }
       }
+    },
+    checkWall(point) {
+      for (const wall of gameState.walls) {
+        let cond = wall.points.some(({ x, y }) => x === point.x && y === point.y);
+        console.log(cond);
+        if (cond) return cond;
+      }
+      return false;
     }
   }
   const myMenus = {
