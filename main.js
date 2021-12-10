@@ -477,7 +477,6 @@ function main() {
       }
     },
     wallMovement() {
-      console.log(' nach   ',gameState.walls);
       if (gameState.dir != "stop" && gameState.isMoveWalls) {
         for (const wall of gameState.walls) {
           if (wall.points.some((point) => point.x === 0)) wall.dx = wall.dx === 0 ? 0 : 1;
